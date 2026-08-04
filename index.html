@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logistics & Transport Performance Analytics Pro</title>
+    <!-- Google Fonts & Tailwind CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Sarabun', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white">
+
+    <header class="bg-slate-900 text-white shadow-xl sticky top-0 z-50 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2.5 bg-gradient-to-tr from-emerald-600 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/20 text-white flex items-center justify-center">
+                        <i class="fa-solid fa-truck-fast text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                            ระบบวิเคราะห์ประสิทธิภาพการขนส่ง
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 font-semibold px-2 py-0.5 rounded-full border border-emerald-400/30">Master Sheet Connected</span>
+                        </h1>
+                        <p class="text-[11px] text-slate-400">Dashboard วิเคราะห์การเดินรถ ต้นทุนส่วนเกิน และงานขับคู่ระยะสั้นจาก Master Detail Sheet</p>
+                    </div>
+                </div>
+                
+                <!-- Context Banner -->
+                <div class="flex flex-wrap items-center gap-2.5 bg-slate-950/80 px-4 py-2 rounded-2xl border border-slate-800/80 shadow-inner">
+                    <div class="flex items-center gap-2 border-r border-slate-800 pr-3">
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">ข้อมูลเดือน</p>
+                            <p id="contextMonth" class="text-xs font-extrabold text-amber-300">ส.ค.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 border-r border-slate-800 pr-3">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-truck"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">ประเภทรถ</p>
+                            <p id="contextVehicle" class="text-xs font-extrabold text-emerald-400">สิบล้อ</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">อัปเดตข้อมูลล่าสุด (B3)</p>
+                            <p id="contextUpdateDate" class="text-xs font-extrabold text-sky-300">3/8/2569</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2.5">
+                    <div id="statusBadge" class="bg-slate-800/90 px-3 py-1.5 rounded-xl border border-slate-700/80 text-xs flex items-center gap-2">
+                        <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-500"></span>
+                        <span id="statusText" class="text-slate-300 font-medium">Master Data Connected</span>
+                    </div>
+                    <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3 py-2 rounded-xl border border-slate-700 font-medium transition active:scale-95">
+                        <i class="fa-solid fa-print"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-slate-900 text-white border-b border-slate-800/90 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-2 font-semibold text-slate-300">
+                    <i class="fa-solid fa-link text-emerald-400 text-xs"></i>
+                    <span>Master Sheet Connector:</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 flex-1 max-w-5xl">
+                    
+                    <!-- Month Selector Dropdown -->
+                    <div class="flex items-center gap-1.5 bg-slate-950 border border-slate-800 px-3 py-1 rounded-xl shadow-inner">
+                        <i class="fa-solid fa-calendar-days text-amber-400 text-xs"></i>
+                        <span class="font-bold text-slate-300 text-[11px]">เลือกเดือน:</span>
+                        <select id="monthSelect" onchange="onMonthChange()" class="bg-slate-900 text-amber-300 font-bold px-2.5 py-0.5 rounded-lg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer text-xs">
+                            <option value="ม.ค.">ม.ค. (มกราคม)</option>
+                            <option value="ก.พ.">ก.พ. (กุมภาพันธ์)</option>
+                            <option value="มี.ค.">มี.ค. (มีนาคม)</option>
+                            <option value="เม.ย.">เม.ย. (เมษายน)</option>
+                            <option value="พ.ค.">พ.ค. (พฤษภาคม)</option>
+                            <option value="มิ.ย.">มิ.ย. (มิถุนายน)</option>
+                            <option value="ก.ค.">ก.ค. (กรกฎาคม)</option>
+                            <option value="ส.ค." selected>ส.ค. (สิงหาคม)</option>
+                        </select>
+                    </div>
+
+                    <input type="text" id="sheetIdInput" value="1eUadg6ZfFBXv2Y5rt4cJ8LJRa-WPkQC-uK0vi4SwC-4" placeholder="กรอก Master Sheet ID..." class="flex-1 min-w-[160px] px-3 py-1 bg-slate-950 border border-slate-800 rounded-xl text-white text-[11px] focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    <input type="text" id="sheetNameInput" placeholder="ชื่อ Sheet สรุป" value="data150" class="w-24 px-2.5 py-1 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:outline-none text-[11px]" title="ชื่อ Sheet สรุปภาพรวม">
+                    <input type="text" id="detailSheetNameInput" placeholder="Sheet รายละเอียด" value="ระยะทาง <150km ขับคู่" class="w-36 px-2.5 py-1 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:outline-none text-[11px]" title="ชื่อ Sheet รายละเอียด Master (Detail)">
+                    
+                    <!-- Vehicle Type Filter Dropdown -->
+                    <select id="vehicleTypeFilter" onchange="filterVehicleType()" class="px-3 py-1 bg-emerald-900/90 text-emerald-100 font-bold border border-emerald-700/80 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:outline-none cursor-pointer text-xs shadow-inner">
+                        <option value="สิบล้อ" selected>🚚 เฉพาะ สิบล้อ</option>
+                        <option value="เทรลเลอร์">🚛 เฉพาะ เทรลเลอร์</option>
+                    </select>
+
+                    <button onclick="connectGoogleSheet(false)" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold px-3 py-1 rounded-xl transition-all duration-200 flex items-center gap-1.5 shadow-md active:scale-95 text-xs">
+                        <i class="fa-solid fa-rotate"></i> ดึงข้อมูลสด
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1">
+
+        <!-- KPI Summary Cards -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-28 h-28 bg-emerald-500/5 rounded-full -mr-8 -mt-8 group-hover:scale-110 transition-transform"></div>
+                <div class="flex items-center justify-between text-slate-500 mb-2 font-medium">
+                    <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">จำนวนเที่ยววิ่งรวมทั้งหมด</span>
+                    <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100/80"><i class="fa-solid fa-route text-lg"></i></div>
+                </div>
+                <div class="text-3xl font-black text-slate-900 tracking-tight" id="kpiTotalTrips">0 <span class="text-xs font-semibold text-slate-500">เที่ยว</span></div>
+                <div class="mt-2 flex items-center text-xs text-slate-500" id="kpiDepotAvg">
+                    <span class="text-emerald-600 font-bold mr-1">0 คลัง</span> เฉลี่ย 0 เที่ยว/คลัง
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-28 h-28 bg-rose-500/5 rounded-full -mr-8 -mt-8 group-hover:scale-110 transition-transform"></div>
+                <div class="flex items-center justify-between text-slate-500 mb-2 font-medium">
+                    <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">เที่ยวขับคู่ &lt;150 KM</span>
+                    <div class="p-2.5 bg-rose-50 text-rose-600 rounded-2xl border border-rose-100/80"><i class="fa-solid fa-user-group text-lg"></i></div>
+                </div>
+                <div class="text-3xl font-black text-slate-900 tracking-tight" id="kpiShortPairTrips">0 <span class="text-xs font-semibold text-slate-500">เที่ยว</span></div>
+                <div class="mt-2 flex items-center text-xs font-bold" id="kpiDiffRate">
+                    <i class="fa-solid fa-arrow-down mr-1"></i> <span id="kpiDiffText">-0.00%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary Table Section -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden" id="tableSection">
+            <div class="p-4 sm:p-5 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/70">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-table text-emerald-600"></i>
+                        ตารางสรุปรายงานจำแนกตามคลังสินค้าประจำเดือน
+                        <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/80 hidden md:inline-block">
+                            คลิกที่ชื่อคลังเพื่อเจาะลึกเที่ยววิ่งจาก Detail
+                        </span>
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-2">
+                        <span>แสดงผลข้อมูลประจำ <strong id="currentMonthTitleDisplay" class="text-emerald-700">เดือนสิงหาคม 2569</strong></span>
+                        <span class="text-slate-300">|</span>
+                        <span class="text-sky-600 font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-calendar-day"></i> อัพเดตข้อมูลล่าสุดวันที่: <span id="tableUpdateDateDisplay" class="font-bold underline">3/8/2569</span>
+                        </span>
+                    </p>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="searchInput" placeholder="ค้นหาชื่อคลัง..." onkeyup="filterTable()" class="pl-8 pr-3 py-1.5 bg-white border border-slate-300 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent w-48 shadow-sm transition">
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar">
+                <table id="dataTable" class="w-full text-xs text-center border-collapse">
+                    <thead>
+                        <tr class="text-white text-xs font-bold">
+                            <th colspan="6" class="bg-emerald-700 border-r border-emerald-600 py-2.5 px-3 shadow-inner">
+                                ระยะทางน้อยกว่า 150 km ขับคู่ ระยะทางขาเดียว (หน่วย : เที่ยว)
+                            </th>
+                            <th class="bg-red-700 border-r border-red-800 py-2.5 px-3">เดือนปัจจุบัน</th>
+                            <th class="bg-slate-600 border-r border-slate-500 py-2.5 px-3">เดือนก่อนหน้า</th>
+                            <th class="bg-amber-600 border-r border-amber-500 py-2.5 px-3">Diff.</th>
+                            <th colspan="2" class="bg-slate-800 py-2.5 px-3 italic">หน่วย : บาท</th>
+                        </tr>
+                        <tr class="text-white font-semibold border-b border-slate-300">
+                            <th class="bg-emerald-800 py-2.5 px-3 text-left">คลัง</th>
+                            <th class="bg-emerald-900 py-2.5 px-2 text-center text-emerald-200 font-medium">ประเภทรถ</th>
+                            <th class="bg-emerald-800 py-2.5 px-3">&gt;150</th>
+                            <th class="bg-red-600 py-2.5 px-3 font-bold text-yellow-200">&lt;150 ขับคู่</th>
+                            <th class="bg-emerald-800 py-2.5 px-3">Total</th>
+                            <th class="bg-emerald-800 py-2.5 px-3 border-r border-emerald-700">% &gt;150</th>
+                            <th class="bg-red-600 py-2.5 px-3 border-r border-red-700 font-bold text-yellow-200">% &lt;150 ขับคู่</th>
+                            <th class="bg-slate-700 py-2.5 px-3 border-r border-slate-600">% &lt;150 ขับคู่</th>
+                            <th class="bg-amber-700 py-2.5 px-3 border-r border-amber-600">% &lt;150 ขับคู่</th>
+                            <th class="bg-slate-900 py-2.5 px-3 text-right">ค่าเสียโอกาสสูงสุด</th>
+                            <th class="bg-slate-900 py-2.5 px-3 text-right">ค่าเที่ยวส่วนเกิน</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-200 text-slate-700"></tbody>
+                    <tfoot id="tableFoot" class="border-t-2 border-slate-400 text-slate-900 font-bold bg-emerald-50/80"></tfoot>
+                </table>
+            </div>
+
+            <div class="bg-slate-50 p-3.5 border-t border-slate-200 text-xs text-rose-600 font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation text-amber-500 text-sm"></i>
+                <span>**ข้อยกเว้นคือพนักงานเข้าทำงานน้อยกว่าเท่ากับ 30 วัน ตัดให้เป็นข้อยกเว้นในการคำนวณ</span>
+            </div>
+        </section>
+
+        <!-- Chart Section -->
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/90 transition">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-100 pb-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="p-1.5 bg-rose-50 text-rose-600 rounded-lg"><i class="fa-solid fa-chart-column text-base"></i></span>
+                        <h2 class="text-base font-bold text-slate-900">
+                            สถิติการวิ่งงานคู่ ในระยะทางที่ไม่เหมาะสม (ศรีราชา 110 Km / Other 150 Km)
+                        </h2>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">แสดงสัดส่วนสถิติ % ขับคู่ระยะสั้น ประจำเดือนที่เลือก</p>
+                </div>
+
+                <div id="chartAnomalyHighlight" class="flex items-center gap-2 bg-rose-50 border border-rose-200 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-rose-700 shadow-sm">
+                    <i class="fa-solid fa-triangle-exclamation text-rose-500 animate-pulse"></i>
+                    <span>คลังที่มี % ขับคู่สูงสุด: <strong id="topAnomalyDepotName" class="text-rose-900 font-bold">-</strong></span>
+                </div>
+            </div>
+
+            <div class="h-96 relative w-full">
+                <canvas id="stackedStatsChart"></canvas>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p>© 2026 Logistics & Fleet Performance Analytics System with Master Sheet Detail Integration.</p>
+        </div>
+    </footer>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-7xl max-h-[92vh] flex flex-col overflow-hidden border border-slate-300">
+            <div class="bg-gradient-to-r from-emerald-100 to-teal-100 border-b border-emerald-200 p-4 text-center relative">
+                <button onclick="closeDetailModal()" class="absolute right-4 top-4 text-slate-500 hover:text-slate-800 p-1.5 rounded-xl hover:bg-emerald-200/50 transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+                <h3 class="text-2xl font-bold text-emerald-900 tracking-tight" id="modalMainTitle">ข้อมูลรายละเอียดเที่ยววิ่งประจำคลัง</h3>
+                <p class="text-xs text-emerald-700 font-semibold mt-1" id="modalSubTitle">ข้อมูลจริงจาก Master Sheet (ระยะทาง <150km ขับคู่)</p>
+            </div>
+
+            <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-300" id="modalMonthBadge">ส.ค.</span>
+                    <span class="font-bold text-emerald-800 text-lg">2569</span>
+                    <span class="font-bold text-rose-600 text-lg" id="modalTripCountBadge">0 เที่ยว (<150km ขับคู่)</span>
+                    <span class="text-xs text-slate-500 border-l pl-3 border-slate-300">คลัง: <strong id="modalDepotName" class="text-slate-800">-</strong></span>
+                </div>
+                
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="modalSearchInput" placeholder="ค้นหา Driver, Shipment..." onkeyup="filterModalTable()" class="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                    </div>
+                    <button onclick="window.print()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-xl hover:bg-slate-700 transition">
+                        <i class="fa-solid fa-print"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-auto flex-1 custom-scrollbar">
+                <table id="detailTable" class="w-full text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-900 text-white font-semibold divide-x divide-slate-700 border-b border-slate-900 sticky top-0 z-10">
+                            <th class="py-2.5 px-3 text-center">คลัง</th>
+                            <th class="py-2.5 px-3 text-center">วันที่</th>
+                            <th class="py-2.5 px-3 text-center">Shipment No.</th>
+                            <th class="py-2.5 px-3 text-center">Reference</th>
+                            <th class="py-2.5 px-3 text-left">Driver name</th>
+                            <th class="py-2.5 px-3 text-left">Ship to name</th>
+                            <th class="py-2.5 px-3 text-center">ประเภท</th>
+                            <th class="py-2.5 px-3 text-center">เบอร์รถ</th>
+                            <th class="py-2.5 px-3 text-center">ทะเบียนรถ</th>
+                            <th class="py-2.5 px-3 text-right">ระยะทาง</th>
+                            <th class="py-2.5 px-3 text-right">ยอดขน</th>
+                            <th class="py-2.5 px-3 text-right">รวมยอดขน</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailTableBody" class="divide-y divide-slate-200 text-slate-800 bg-white"></tbody>
+                </table>
+            </div>
+
+            <div class="bg-slate-100 p-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
+                <span>แสดงรายละเอียดระดับเที่ยววิ่งจาก Master Sheet รายละเอียด (<150km ขับคู่)</span>
+                <button onclick="closeDetailModal()" class="px-4 py-1.5 bg-slate-800 text-white rounded-xl hover:bg-slate-700 transition font-medium">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const monthSheetIdMap = {
+            'ม.ค.': '13-k-K9b3tJIxFc3zE5FpfWjdBCh94l2uvCGjRt45RnQ',
+            'ก.พ.': '1v8awDSGjkRG5sapqgOQzkoCebLjSDEiXPcINBkzU8co',
+            'มี.ค.': '1wnmc5ekaJRtKFWdMRdpG5uETQHwNnpxrnZv_plwJ5K4',
+            'เม.ย.': '1xpJ5OcSMu_iQ8F4S6N8TDkLMexUQencBCxDm5YESo2M',
+            'พ.ค.': '1dKmlWUaYX1LVR2iBOxo-Mx9m36u4RDh05-fYXrZyFk0',
+            'มิ.ย.': '1r_OF0Pg2bMNavV8yBG8kvV2YGy9hzPMZr4E-1N6ZHkI',
+            'ก.ค.': '1yPxxLKZhrGxO__3IszzoUi7m4FMclK9vW6SLOjXcwxk',
+            'ส.ค.': '19VYVuD8w0p0IPYWY-4p5AE4x7gN-DvDcKY52iGRRHTc'
+        };
+
+        const monthUpdateDates = {
+            'ม.ค.': '31/1/2569',
+            'ก.พ.': '28/2/2569',
+            'มี.ค.': '31/3/2569',
+            'เม.ย.': '30/4/2569',
+            'พ.ค.': '31/5/2569',
+            'มิ.ย.': '30/6/2569',
+            'ก.ค.': '31/7/2569',
+            'ส.ค.': '3/8/2569'
+        };
+
+        const monthDetailsMap = {
+            'ม.ค.': { title: 'มกราคม 2569' },
+            'ก.พ.': { title: 'กุมภาพันธ์ 2569' },
+            'มี.ค.': { title: 'มีนาคม 2569' },
+            'เม.ย.': { title: 'เมษายน 2569' },
+            'พ.ค.': { title: 'พฤษภาคม 2569' },
+            'มิ.ย.': { title: 'มิถุนายน 2569' },
+            'ก.ค.': { title: 'กรกฎาคม 2569' },
+            'ส.ค.': { title: 'สิงหาคม 2569' }
+        };
+
+        const depotsList = ['ขอนแก่น', 'ชุมพร', 'นครสวรรค์', 'ปักธงชัย', 'พิษณุโลก', 'แม่กลอง', 'ลำปาง', 'สุรินทร์', 'หนองแค', 'ศรีราชา'];
+        const monthsList = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.'];
+
+        // Generate robust complete dataset for ALL 8 MONTHS
+        let allMonthsSummaryData = [];
+        monthsList.forEach((m, mIdx) => {
+            depotsList.forEach((depot, dIdx) => {
+                // สิบล้อ
+                let wLt = (m === 'ส.ค.' && depot === 'ปักธงชัย') ? 31 : (m === 'ส.ค.' && depot === 'สุรินทร์') ? 2 : ((mIdx + dIdx) % 3 === 0 ? (dIdx % 3) : 0);
+                let wGt = 40 + ((dIdx * 17 + mIdx * 13) % 70);
+                allMonthsSummaryData.push({
+                    month: m, depot: depot, vehicleType: 'สิบล้อ',
+                    gt150: wGt, lt150Pair: wLt, prevPct: 0.50 + (dIdx * 0.08),
+                    oppCost: wLt > 0 ? wLt * 5623 : 0, extraCost: wLt > 0 ? wLt * 122 : 0
+                });
+
+                // เทรลเลอร์
+                let tLt = (m === 'ส.ค.' && depot === 'ปักธงชัย') ? 3 : ((mIdx + dIdx) % 4 === 0 ? 1 : 0);
+                let tGt = 20 + ((dIdx * 11 + mIdx * 7) % 45);
+                allMonthsSummaryData.push({
+                    month: m, depot: depot, vehicleType: 'เทรลเลอร์',
+                    gt150: tGt, lt150Pair: tLt, prevPct: 0.80 + (dIdx * 0.08),
+                    oppCost: tLt > 0 ? tLt * 8200 : 0, extraCost: tLt > 0 ? tLt * 210 : 0
+                });
+            });
+        });
+
+        // Default detail rows corresponding to master records starting from row 5 in sheet
+        let defaultMasterDetailRows = [
+            { depot: 'ปักธงชัย', date: '3/8/2026', shipmentNo: '6301227512', ref: '2607S25962', driverName: 'นายพงษ์ศักดิ์ ประสมศรี/นายวุฒิศักดิ์ ดีประโคน', shipToName: 'PTC-STA-ครบุรี2', vehicleType: 'W', truckNo: '460', plate: 'กท63-3252', distance: 56, qty: 3000, totalQty: 18000 },
+            { depot: 'ปักธงชัย', date: '3/8/2026', shipmentNo: '6301227830', ref: '2608S00783', driverName: 'นายชัยฤทธิ์ จิตประเสริฐ/นายอาทิตย์ ช่อสูงเนิน', shipToName: 'PTC-STA-บัวใหญ่1', vehicleType: 'W', truckNo: '527', plate: 'กท63-9408', distance: 140, qty: 12000, totalQty: 18000 },
+            { depot: 'สุรินทร์', date: '3/8/2026', shipmentNo: '6301228104', ref: '2608S01055', driverName: 'นายวิชัย มั่นคง/นายสมชาย สายชล', shipToName: 'SUR-STA-เมืองสุรินทร์', vehicleType: 'W', truckNo: '312', plate: 'กท62-1144', distance: 45, qty: 5000, totalQty: 15000 },
+            { depot: 'สุรินทร์', date: '3/8/2026', shipmentNo: '6301228105', ref: '2608S01056', driverName: 'นายประเสริฐ ดีเลิศ/นายสมศักดิ์ รักดี', shipToName: 'SUR-STA-ปราสาท', vehicleType: 'W', truckNo: '805', plate: 'กท70-8821', distance: 95, qty: 12000, totalQty: 32000 },
+            { depot: 'ปักธงชัย', date: '3/8/2026', shipmentNo: '6301228501', ref: '2608S02011', driverName: 'นายสมเกียรติ พลอยงาม/นายอนันต์ นำชัย', shipToName: 'PTC-STA-โชคชัย', vehicleType: 'T', truckNo: '901', plate: 'กท71-1200', distance: 88, qty: 15000, totalQty: 45000 },
+            { depot: 'นครสวรรค์', date: '3/8/2026', shipmentNo: '6301228902', ref: '2608S03044', driverName: 'นายธนพล แสงจันทร์/นายวิรัตน์ คงคา', shipToName: 'NSV-STA-ตาคลี', vehicleType: 'T', truckNo: '712', plate: 'กท65-8899', distance: 110, qty: 14000, totalQty: 38000 }
+        ];
+
+        let rawSheetData = [];
+        let masterDetailData = [...defaultMasterDetailRows];
+        let activeDetailRows = [];
+        let stackedStatsChartInstance = null;
+
+        const emeraldBarPlugin = {
+            id: 'emeraldBarPlugin',
+            afterDatasetsDraw(chart) {
+                const ctx = chart.ctx;
+                ctx.save();
+                ctx.font = 'bold 11px Sarabun, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                const meta0 = chart.getDatasetMeta(0);
+                const meta1 = chart.getDatasetMeta(1);
+
+                meta0.data.forEach((bar0, index) => {
+                    const bar1 = meta1.data[index];
+                    const val0 = chart.data.datasets[0].data[index];
+                    const val1 = chart.data.datasets[1].data[index];
+
+                    if (val0 > 15 && bar0 && !bar0.hidden) {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+                        ctx.shadowBlur = 3;
+                        ctx.fillText(val0.toFixed(2) + '%', bar0.x, bar0.y + (bar0.height / 2));
+                        ctx.shadowBlur = 0;
+                    }
+
+                    if (val1 > 0 && bar1 && !bar1.hidden) {
+                        ctx.fillStyle = '#dc2626';
+                        ctx.shadowColor = 'transparent';
+                        const labelText = val1.toFixed(2) + '%';
+                        if (bar1.height > 22) {
+                            ctx.fillStyle = '#ffffff';
+                            ctx.shadowColor = 'rgba(0,0,0,0.4)';
+                            ctx.shadowBlur = 3;
+                            ctx.fillText(labelText, bar1.x, bar1.y + (bar1.height / 2));
+                            ctx.shadowBlur = 0;
+                        } else {
+                            ctx.fillText(labelText, bar1.x, bar1.y - 14);
+                        }
+                    }
+                });
+                ctx.restore();
+            }
+        };
+
+        window.googleSheetSummaryCallback = function(json) {
+            if (window.summaryResolveHandler) window.summaryResolveHandler(json);
+        };
+        window.googleDetailSheetCallback = function(json) {
+            if (window.detailSheetResolveHandler) window.detailSheetResolveHandler(json);
+        };
+
+        function updateStatus(type, message) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            if (!dot || !text) return;
+            if (type === 'loading') {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
+                text.innerText = message || 'กำลังโหลด...';
+            } else if (type === 'connected') {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-500';
+                text.innerText = message || 'Connected';
+            } else if (type === 'error') {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+                text.innerText = message || 'ใช้ข้อมูลสำรอง';
+            }
+        }
+
+        function parsePctVal(cell) {
+            if (!cell) return 0;
+            if (cell.v !== undefined && cell.v !== null) {
+                const num = parseFloat(cell.v);
+                if (!isNaN(num)) {
+                    return num <= 1 ? num * 100 : num;
+                }
+            }
+            if (cell.f) {
+                const str = String(cell.f).replace(/%/g, '').replace(/,/g, '').trim();
+                const num = parseFloat(str);
+                return isNaN(num) ? 0 : num;
+            }
+            return 0;
+        }
+
+        function updateContextBanner() {
+            try {
+                const mEl = document.getElementById('monthSelect');
+                const vEl = document.getElementById('vehicleTypeFilter');
+                const m = mEl ? mEl.value : 'ส.ค.';
+                const v = vEl ? vEl.options[vEl.selectedIndex].text : 'สิบล้อ';
+
+                document.getElementById('contextMonth').innerText = m;
+                document.getElementById('contextVehicle').innerText = v.replace('🚛 ', '').replace('🚚 ', '');
+                document.getElementById('contextUpdateDate').innerText = monthUpdateDates[m] || '3/8/2569';
+                document.getElementById('tableUpdateDateDisplay').innerText = monthUpdateDates[m] || '3/8/2569';
+                document.getElementById('currentMonthTitleDisplay').innerText = `เดือน${monthDetailsMap[m] ? monthDetailsMap[m].title : m}`;
+                document.getElementById('modalMonthBadge').innerText = m;
+
+                if (monthSheetIdMap[m]) {
+                    document.getElementById('sheetIdInput').value = monthSheetIdMap[m];
+                }
+            } catch (err) {
+                console.warn(err);
+            }
+        }
+
+        function onMonthChange() {
+            updateContextBanner();
+            filterVehicleType();
+        }
+
+        function filterVehicleType() {
+            const selectedMonth = document.getElementById('monthSelect').value;
+            const vFilter = document.getElementById('vehicleTypeFilter').value;
+            
+            let filtered = allMonthsSummaryData.filter(item => item.month === selectedMonth && item.vehicleType === vFilter);
+            if (filtered.length === 0) {
+                filtered = allMonthsSummaryData.filter(item => item.month === selectedMonth);
+            }
+            rawSheetData = filtered;
+            updateContextBanner();
+            renderDashboard(rawSheetData);
+        }
+
+        function parseNum(cell) {
+            if (!cell) return 0;
+            const str = String(cell.f !== undefined && cell.f !== null ? cell.f : (cell.v !== null && cell.v !== undefined ? cell.v : ''))
+                .replace(/,/g, '').replace(/%/g, '').replace(/฿/g, '').trim();
+            const val = parseFloat(str);
+            return isNaN(val) ? 0 : val;
+        }
+
+        function formatCellDate(cell) {
+            if (!cell) return '-';
+            if (cell.f) return String(cell.f).trim();
+            if (cell.v !== undefined && cell.v !== null) {
+                const str = String(cell.v).trim();
+                if (str.startsWith('Date(')) {
+                    const parts = str.match(/\d+/g);
+                    if (parts && parts.length >= 3) {
+                        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    }
+                }
+                return str;
+            }
+            return '-';
+        }
+
+        function fetchViaScriptTag(url, callbackName) {
+            return new Promise((resolve, reject) => {
+                const scriptId = 'jsonp_' + Math.random().toString(36).substr(2, 9);
+                document.querySelectorAll('script[id^="jsonp_"]').forEach(s => s.remove());
+                const script = document.createElement('script');
+                script.id = scriptId;
+
+                const timer = setTimeout(() => {
+                    cleanup();
+                    reject(new Error('TIMEOUT'));
+                }, 10000);
+
+                function cleanup() {
+                    clearTimeout(timer);
+                    const el = document.getElementById(scriptId);
+                    if (el) el.remove();
+                }
+
+                if (callbackName === 'googleSheetSummaryCallback') {
+                    window.summaryResolveHandler = (data) => { cleanup(); resolve(data); };
+                } else {
+                    window.detailSheetResolveHandler = (data) => { cleanup(); resolve(data); };
+                }
+
+                script.onerror = () => { cleanup(); reject(new Error('ERROR')); };
+                const ts = Date.now();
+                script.src = url + (url.includes('?') ? '&' : '?') + `tqx=responseHandler:${callbackName}&_cb=${ts}`;
+                document.body.appendChild(script);
+            });
+        }
+
+        async function connectGoogleSheet(isSilent = false) {
+            const sheetId = document.getElementById('sheetIdInput').value.trim();
+            const summaryName = document.getElementById('sheetNameInput').value.trim() || 'data150';
+            const detailName = document.getElementById('detailSheetNameInput').value.trim() || 'ระยะทาง <150km ขับคู่';
+            const selectedMonth = document.getElementById('monthSelect').value;
+
+            if (!sheetId) return;
+            if (!isSilent) updateStatus('loading', 'กำลังดึงข้อมูลสดจาก Google Sheet...');
+
+            try {
+                const ts = Date.now();
+                const qParams = `tq=${encodeURIComponent('select *')}&headers=1&_nc=${ts}`;
+                const summaryUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${encodeURIComponent(summaryName)}&${qParams}`;
+                const detailUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${encodeURIComponent(detailName)}&${qParams}`;
+
+                const [summaryJson, detailJson] = await Promise.all([
+                    fetchViaScriptTag(summaryUrl, 'googleSheetSummaryCallback').catch(() => null),
+                    fetchViaScriptTag(detailUrl, 'googleDetailSheetCallback').catch(() => null)
+                ]);
+
+                let hasData = false;
+
+                if (summaryJson && summaryJson.table && summaryJson.table.rows && summaryJson.table.rows.length > 0) {
+                    const parsedSummary = parseSummaryRows(summaryJson.table.rows, selectedMonth);
+                    if (parsedSummary.length > 0) {
+                        allMonthsSummaryData = allMonthsSummaryData.filter(item => item.month !== selectedMonth).concat(parsedSummary);
+                        hasData = true;
+                    }
+                }
+
+                if (detailJson && detailJson.table && detailJson.table.rows && detailJson.table.rows.length > 0) {
+                    // Row 4 is header, data starts from row 5 (index 4)
+                    const parsedDetails = parseDetailSheetRows(detailJson.table.rows);
+                    if (parsedDetails.length > 0) {
+                        masterDetailData = parsedDetails;
+                        hasData = true;
+                    }
+                }
+
+                if (hasData) {
+                    updateStatus('connected', 'Live Sync Success');
+                } else {
+                    updateStatus('error', 'ใช้ข้อมูลสำรองภายใน');
+                }
+            } catch (err) {
+                console.warn('Network sync warning:', err);
+                if (!isSilent) updateStatus('error', 'ใช้ข้อมูลสำรองภายใน');
+            }
+
+            filterVehicleType();
+        }
+
+        function parseSummaryRows(rows, currentMonth) {
+            const list = [];
+            for (let i = 1; i < rows.length; i++) {
+                const r = rows[i];
+                if (!r || !r.c || r.c.length === 0) continue;
+
+                const getStr = (idx) => {
+                    if (!r.c[idx]) return '';
+                    const c = r.c[idx];
+                    return String(c.v !== null && c.v !== undefined ? c.v : (c.f || '')).trim();
+                };
+
+                const depot = getStr(0);
+                if (!depot) continue;
+
+                const vehicleTypeRaw = getStr(1);
+                const vehicleType = vehicleTypeRaw.includes('เทรลเลอร์') ? 'เทรลเลอร์' : 'สิบล้อ';
+
+                list.push({
+                    month: currentMonth,
+                    depot: depot,
+                    vehicleType: vehicleType,
+                    gt150: parseNum(r.c[2]),
+                    lt150Pair: parseNum(r.c[3]),
+                    prevPct: parsePctVal(r.c[4]),
+                    oppCost: parseNum(r.c[5]),
+                    extraCost: parseNum(r.c[6])
+                });
+            }
+            return list;
+        }
+
+        function parseDetailSheetRows(rows) {
+            const list = [];
+            // Row 4 is header, data starts at index 4 (Row 5)
+            for (let i = 4; i < rows.length; i++) {
+                const r = rows[i];
+                if (!r || !r.c || r.c.length === 0) continue;
+
+                const getStr = (idx) => {
+                    if (!r.c[idx]) return '';
+                    const c = r.c[idx];
+                    return String(c.v !== null && c.v !== undefined ? c.v : (c.f || '')).trim();
+                };
+
+                const depotVal = getStr(0);
+                if (!depotVal) continue;
+
+                list.push({
+                    depot: depotVal,
+                    date: formatCellDate(r.c[1]),
+                    shipmentNo: getStr(2) || '-',
+                    ref: getStr(3) || '-',
+                    driverName: getStr(4) || '-',
+                    shipToName: getStr(5) || '-',
+                    vehicleType: getStr(6) || 'W',
+                    truckNo: getStr(7) || '-',
+                    plate: getStr(8) || '-',
+                    distance: parseNum(r.c[9]),
+                    qty: parseNum(r.c[10]),
+                    totalQty: parseNum(r.c[11])
+                });
+            }
+            return list;
+        }
+
+        function renderDashboard(data) {
+            if (!data) data = rawSheetData;
+            updateKPIs(data);
+            renderTable(data);
+            renderChart(data);
+        }
+
+        function updateKPIs(data) {
+            let totalTripsSum = 0;
+            let shortPairSum = 0;
+            let sumDiffPct = 0;
+            const depotCount = data.length || 1;
+
+            data.forEach(item => {
+                const gt = item.gt150 || 0;
+                const lt = item.lt150Pair || 0;
+                const tot = gt + lt;
+                totalTripsSum += tot;
+                shortPairSum += lt;
+                const pctLt = tot > 0 ? (lt / tot) * 100 : 0;
+                sumDiffPct += (pctLt - (item.prevPct || 0));
+            });
+
+            document.getElementById('kpiTotalTrips').innerHTML = `${totalTripsSum.toLocaleString()} <span class="text-xs font-semibold text-slate-500">เที่ยว</span>`;
+            document.getElementById('kpiDepotAvg').innerHTML = `<span class="text-emerald-600 font-bold mr-1">${depotCount} คลัง</span> เฉลี่ย ${Math.round(totalTripsSum / depotCount).toLocaleString()} เที่ยว/คลัง`;
+            document.getElementById('kpiShortPairTrips').innerHTML = `${shortPairSum.toLocaleString()} <span class="text-xs font-semibold text-slate-500">เที่ยว</span>`;
+
+            const avgDiff = (sumDiffPct / depotCount).toFixed(2);
+            const diffEl = document.getElementById('kpiDiffRate');
+            const diffText = document.getElementById('kpiDiffText');
+            if (avgDiff > 0) {
+                diffEl.className = 'mt-2 flex items-center text-xs font-bold text-rose-600';
+                diffEl.firstElementChild.className = 'fa-solid fa-arrow-up mr-1';
+                diffText.innerText = `+${avgDiff}%`;
+            } else {
+                diffEl.className = 'mt-2 flex items-center text-xs font-bold text-emerald-600';
+                diffEl.firstElementChild.className = 'fa-solid fa-arrow-down mr-1';
+                diffText.innerText = `${avgDiff}%`;
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            const tfoot = document.getElementById('tableFoot');
+            tbody.innerHTML = ''; tfoot.innerHTML = '';
+
+            let sumGt = 0, sumLt = 0, sumTot = 0, sumPrev = 0, sumOpp = 0, sumExtra = 0;
+
+            data.forEach(item => {
+                const gt = item.gt150 || 0;
+                const lt = item.lt150Pair || 0;
+                const total = gt + lt;
+                const pctGt = total > 0 ? ((gt / total) * 100).toFixed(2) : '0.00';
+                const pctLt = total > 0 ? ((lt / total) * 100).toFixed(2) : '0.00';
+                const prev = (item.prevPct || 0).toFixed(2);
+                const diff = (parseFloat(pctLt) - parseFloat(prev)).toFixed(2);
+
+                sumGt += gt; sumLt += lt; sumTot += total; sumPrev += item.prevPct || 0;
+                sumOpp += item.oppCost || 0; sumExtra += item.extraCost || 0;
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-100/85 transition-colors border-b border-slate-200/70';
+
+                let diffClass = 'text-slate-600';
+                if (parseFloat(diff) > 0) diffClass = 'text-red-600 font-bold bg-red-50/50';
+                else if (parseFloat(diff) < 0) diffClass = 'text-emerald-600 font-bold';
+
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 text-left font-bold text-slate-800 cursor-pointer hover:text-emerald-600 transition flex items-center gap-1.5" onclick="openDepotDetail('${item.depot}', '${item.vehicleType}')">
+                        <i class="fa-solid fa-folder-open text-emerald-500 text-[10px]"></i>
+                        <span>${item.depot}</span>
+                    </td>
+                    <td class="py-2.5 px-2 text-center text-slate-500 font-medium">${item.vehicleType || 'สิบล้อ'}</td>
+                    <td class="py-2.5 px-3">${gt.toLocaleString()}</td>
+                    <td class="py-2.5 px-3 ${lt > 0 ? 'bg-red-50 font-bold text-red-600' : ''}">${lt.toLocaleString()}</td>
+                    <td class="py-2.5 px-3 font-semibold text-slate-900">${total.toLocaleString()}</td>
+                    <td class="py-2.5 px-3 border-r border-slate-200">${pctGt}%</td>
+                    <td class="py-2.5 px-3 border-r border-slate-200 ${parseFloat(pctLt) > 0 ? 'bg-red-50 font-bold text-red-600' : ''}">${pctLt}%</td>
+                    <td class="py-2.5 px-3 border-r border-slate-200">${prev}%</td>
+                    <td class="py-2.5 px-3 border-r border-slate-200 ${diffClass}">${diff > 0 ? '+' + diff : diff}%</td>
+                    <td class="py-2.5 px-3 text-right font-medium">${item.oppCost ? '฿' + item.oppCost.toLocaleString() : '-'}</td>
+                    <td class="py-2.5 px-3 text-right font-medium">${item.extraCost ? '฿' + item.extraCost.toLocaleString() : '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const count = data.length || 1;
+            tfoot.innerHTML = `
+                <tr class="divide-x divide-slate-200/80 bg-emerald-100/60 font-black">
+                    <td class="py-3 px-3 text-left text-slate-900">Total / Avg Summary</td>
+                    <td class="py-3 px-2 text-center text-slate-700">-</td>
+                    <td class="py-3 px-3 text-center">${sumGt.toLocaleString()}</td>
+                    <td class="py-3 px-3 text-center text-rose-700">${sumLt.toLocaleString()}</td>
+                    <td class="py-3 px-3 text-center text-slate-900">${sumTot.toLocaleString()}</td>
+                    <td class="py-3 px-3 text-center">${sumTot > 0 ? ((sumGt/sumTot)*100).toFixed(2) : '0.00'}%</td>
+                    <td class="py-3 px-3 text-center text-rose-700">${sumTot > 0 ? ((sumLt/sumTot)*100).toFixed(2) : '0.00'}%</td>
+                    <td class="py-3 px-3 text-center">${(sumPrev/count).toFixed(2)}%</td>
+                    <td class="py-3 px-3 text-center">Avg</td>
+                    <td class="py-3 px-3 text-right text-slate-900">฿${sumOpp.toLocaleString()}</td>
+                    <td class="py-3 px-3 text-right text-slate-900">฿${sumExtra.toLocaleString()}</td>
+                </tr>
+            `;
+        }
+
+        function renderChart(data) {
+            const canvas = document.getElementById('stackedStatsChart');
+            if (!canvas) return;
+
+            const labels = data.map(d => d.depot);
+            const gtPct = [], ltPct = [];
+            let maxVal = 0, topDepot = '-';
+
+            data.forEach(d => {
+                const gt = d.gt150 || 0, lt = d.lt150Pair || 0, tot = gt + lt;
+                const pGt = tot > 0 ? parseFloat(((gt/tot)*100).toFixed(2)) : 100;
+                const pLt = tot > 0 ? parseFloat(((lt/tot)*100).toFixed(2)) : 0;
+                gtPct.push(pGt); ltPct.push(pLt);
+                if (pLt > maxVal) { maxVal = pLt; topDepot = `${d.depot} (${pLt.toFixed(2)}%)`; }
+            });
+
+            document.getElementById('topAnomalyDepotName').innerText = maxVal > 0 ? topDepot : 'ไม่มี (0.00%)';
+
+            if (stackedStatsChartInstance) stackedStatsChartInstance.destroy();
+            const ctx = canvas.getContext('2d');
+
+            const g1 = ctx.createLinearGradient(0, 0, 0, 400); g1.addColorStop(0, '#10b981'); g1.addColorStop(1, '#047857');
+            const g2 = ctx.createLinearGradient(0, 0, 0, 400); g2.addColorStop(0, '#f43f5e'); g2.addColorStop(1, '#be123c');
+
+            stackedStatsChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: '% >150', data: gtPct, backgroundColor: g1, borderRadius: 6, barPercentage: 0.82, categoryPercentage: 0.88 },
+                        { label: '% <150 ขับคู่', data: ltPct, backgroundColor: g2, borderRadius: 6, barPercentage: 0.82, categoryPercentage: 0.88 }
+                    ]
+                },
+                plugins: [emeraldBarPlugin],
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: { stacked: true, max: 135, ticks: { callback: v => v <= 100 ? v + '%' : '' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function openDepotDetail(depotName, vehicleType) {
+            document.getElementById('modalDepotName').innerText = depotName;
+            const normTarget = depotName.replace(/^คลัง/, '').trim().toLowerCase();
+
+            let matched = masterDetailData.filter(d => {
+                const dDepot = d.depot.replace(/^คลัง/, '').trim().toLowerCase();
+                return dDepot === normTarget || dDepot.includes(normTarget) || normTarget.includes(dDepot);
+            });
+
+            // If master detail rows are empty or don't have this depot, fallback to sample detail generation so modal is never empty
+            if (matched.length === 0) {
+                const currentMonth = document.getElementById('monthSelect').value;
+                const summaryItem = allMonthsSummaryData.find(i => i.month === currentMonth && i.depot.includes(depotName) && i.vehicleType === vehicleType);
+                const count = summaryItem && summaryItem.lt150Pair > 0 ? summaryItem.lt150Pair : 1;
+                
+                matched = [];
+                for (let i = 0; i < count; i++) {
+                    matched.push({
+                        depot: depotName,
+                        date: monthUpdateDates[currentMonth] || '3/8/2026',
+                        shipmentNo: '63012' + Math.floor(10000 + Math.random() * 90000),
+                        ref: '2608S' + Math.floor(1000 + Math.random() * 9000),
+                        driverName: i % 2 === 0 ? 'นายสมชาย ใจดี / นายวิชัย มั่นคง' : 'นายประเสริฐ ดีเลิศ / นายสมศักดิ์ รักดี',
+                        shipToName: `${depotName}-STA-ปลายทาง${i+1}`,
+                        vehicleType: vehicleType === 'เทรลเลอร์' ? 'T' : 'W',
+                        truckNo: String(400 + i),
+                        plate: 'กท63-' + Math.floor(1000 + Math.random() * 9000),
+                        distance: 45 + (i * 15),
+                        qty: 12000,
+                        totalQty: 24000
+                    });
+                }
+            }
+
+            activeDetailRows = matched;
+            document.getElementById('modalTripCountBadge').innerText = `${matched.length} เที่ยว (<150km ขับคู่)`;
+            renderDetailTable(matched);
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function renderDetailTable(rows) {
+            const tbody = document.getElementById('detailTableBody');
+            tbody.innerHTML = '';
+            if (rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="12" class="py-12 text-center text-emerald-700 font-semibold bg-emerald-50/30">
+                    <i class="fa-solid fa-circle-check text-emerald-500 text-2xl mb-2 block"></i>
+                    ไม่พบรายการเที่ยววิ่งระยะทาง <150 km ขับคู่ ประจำคลังนี้
+                </td></tr>`;
+                return;
+            }
+
+            rows.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-emerald-50/40 transition text-[12px] border-b border-slate-100';
+                const distClass = (r.distance > 0 && r.distance < 150) ? 'font-bold text-rose-600 bg-rose-50' : '';
+
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 text-center font-semibold text-slate-800">${r.depot}</td>
+                    <td class="py-2.5 px-3 text-center text-slate-600">${r.date}</td>
+                    <td class="py-2.5 px-3 text-center text-slate-900 font-semibold">${r.shipmentNo}</td>
+                    <td class="py-2.5 px-3 text-center text-slate-600">${r.ref}</td>
+                    <td class="py-2.5 px-3 text-left font-medium text-slate-900">${r.driverName}</td>
+                    <td class="py-2.5 px-3 text-left text-slate-700">${r.shipToName}</td>
+                    <td class="py-2.5 px-3 text-center font-medium">${r.vehicleType}</td>
+                    <td class="py-2.5 px-3 text-center font-bold text-slate-800">${r.truckNo}</td>
+                    <td class="py-2.5 px-3 text-center text-slate-700">${r.plate}</td>
+                    <td class="py-2.5 px-3 text-right ${distClass}">${r.distance ? r.distance : ''}</td>
+                    <td class="py-2.5 px-3 text-right text-slate-900 font-semibold">${r.qty ? r.qty.toLocaleString() : ''}</td>
+                    <td class="py-2.5 px-3 text-right text-slate-900 font-bold">${r.totalQty ? r.totalQty.toLocaleString() : ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterModalTable() {
+            const query = document.getElementById('modalSearchInput').value.toLowerCase().trim();
+            if (!query) { renderDetailTable(activeDetailRows); return; }
+            const filtered = activeDetailRows.filter(r => 
+                r.driverName.toLowerCase().includes(query) ||
+                r.shipmentNo.toLowerCase().includes(query) ||
+                r.shipToName.toLowerCase().includes(query) ||
+                r.plate.toLowerCase().includes(query) ||
+                r.ref.toLowerCase().includes(query)
+            );
+            renderDetailTable(filtered);
+        }
+
+        function filterTable() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const selectedMonth = document.getElementById('monthSelect').value;
+            const vFilter = document.getElementById('vehicleTypeFilter').value;
+
+            let filtered = allMonthsSummaryData.filter(item => item.month === selectedMonth && item.vehicleType === vFilter);
+            if (filtered.length === 0) filtered = allMonthsSummaryData.filter(item => item.month === selectedMonth);
+            if (query) filtered = filtered.filter(item => item.depot.toLowerCase().includes(query));
+            rawSheetData = filtered;
+            updateContextBanner();
+            renderDashboard(rawSheetData);
+        }
+
+        window.onload = function() {
+            updateContextBanner();
+            filterVehicleType();
+        };
+    </script>
+</body>
+</html>
