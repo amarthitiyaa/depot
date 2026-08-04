@@ -44,6 +44,11 @@
             100% { background-color: transparent; }
         }
         .data-updated-flash { animation: pulse-highlight 1.5s ease-out; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
     </style>
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white">
@@ -302,7 +307,7 @@
                         % &lt;150 ขับคู่ (ซ้อนบนสุด)
                     </span>
                     <span class="flex items-center gap-2 font-semibold text-slate-700">
-                        <span class="w-3.5 h-3.5 rounded-md bg-gradient-to-tr from-emerald-500 to-teal-500 inline-block shadow-sm"></span>
+                        <span class="w-3.5 h-3.5 rounded-md bg-gradient-to-tr from-emerald-600 to-teal-500 inline-block shadow-sm"></span>
                         % &gt;150 (ระยะทางปกติ)
                     </span>
                 </div>
@@ -355,11 +360,13 @@
                 <table id="detailTable" class="w-full text-xs border-collapse">
                     <thead>
                         <tr class="bg-slate-900 text-white font-semibold divide-x divide-slate-700 border-b border-slate-900 sticky top-0 z-10">
+                            <th class="py-2.5 px-3 text-center">คลัง</th>
                             <th class="py-2.5 px-3 text-center">วันที่</th>
                             <th class="py-2.5 px-3 text-center">Shipment No.</th>
                             <th class="py-2.5 px-3 text-center">Reference</th>
                             <th class="py-2.5 px-3 text-left">Driver name</th>
                             <th class="py-2.5 px-3 text-left">Ship to name</th>
+                            <th class="py-2.5 px-3 text-center">ประเภท</th>
                             <th class="py-2.5 px-3 text-center">เบอร์รถ</th>
                             <th class="py-2.5 px-3 text-center">ทะเบียนรถ</th>
                             <th class="py-2.5 px-3 text-right">ระยะทาง</th>
@@ -381,7 +388,7 @@
     </div>
 
     <script>
-        // Multi-Month Baseline Sample Dataset
+        // Multi-Month Sample Dataset
         const sampleData = [
             // ส.ค. 2569
             { month: 'ส.ค.', depot: 'ขอนแก่น', vehicleType: 'สิบล้อ', gt150: 80, lt150Pair: 0, prevPct: 0.60, oppCost: 0, extraCost: 0 },
@@ -404,7 +411,19 @@
             { month: 'ส.ค.', depot: 'ลำปาง', vehicleType: 'เทรลเลอร์', gt150: 130, lt150Pair: 0, prevPct: 0.00, oppCost: 0, extraCost: 0 },
             { month: 'ส.ค.', depot: 'สุรินทร์', vehicleType: 'เทรลเลอร์', gt150: 271, lt150Pair: 3, prevPct: 0.62, oppCost: 27339, extraCost: 762 },
             { month: 'ส.ค.', depot: 'หนองแค', vehicleType: 'เทรลเลอร์', gt150: 152, lt150Pair: 2, prevPct: 1.23, oppCost: 18393, extraCost: 568 },
-            { month: 'ส.ค.', depot: 'ศรีราชา', vehicleType: 'เทรลเลอร์', gt150: 0, lt150Pair: 0, prevPct: 0.00, oppCost: 0, extraCost: 0 }
+            { month: 'ส.ค.', depot: 'ศรีราชา', vehicleType: 'เทรลเลอร์', gt150: 0, lt150Pair: 0, prevPct: 0.00, oppCost: 0, extraCost: 0 },
+
+            // ก.ค. 2569
+            { month: 'ก.ค.', depot: 'ขอนแก่น', vehicleType: 'สิบล้อ', gt150: 92, lt150Pair: 1, prevPct: 0.80, oppCost: 5500, extraCost: 140 },
+            { month: 'ก.ค.', depot: 'ชุมพร', vehicleType: 'สิบล้อ', gt150: 50, lt150Pair: 0, prevPct: 0.00, oppCost: 0, extraCost: 0 },
+            { month: 'ก.ค.', depot: 'นครสวรรค์', vehicleType: 'สิบล้อ', gt150: 42, lt150Pair: 1, prevPct: 0.50, oppCost: 6100, extraCost: 180 },
+            { month: 'ก.ค.', depot: 'ปักธงชัย', vehicleType: 'สิบล้อ', gt150: 45, lt150Pair: 15, prevPct: 0.35, oppCost: 85200, extraCost: 1950 },
+            { month: 'ก.ค.', depot: 'พิษณุโลก', vehicleType: 'สิบล้อ', gt150: 79, lt150Pair: 2, prevPct: 0.90, oppCost: 12000, extraCost: 310 },
+            { month: 'ก.ค.', depot: 'แม่กลอง', vehicleType: 'สิบล้อ', gt150: 70, lt150Pair: 0, prevPct: 0.00, oppCost: 0, extraCost: 0 },
+            { month: 'ก.ค.', depot: 'ลำปาง', vehicleType: 'สิบล้อ', gt150: 84, lt150Pair: 1, prevPct: 0.60, oppCost: 5800, extraCost: 150 },
+            { month: 'ก.ค.', depot: 'สุรินทร์', vehicleType: 'สิบล้อ', gt150: 62, lt150Pair: 1, prevPct: 0.20, oppCost: 5200, extraCost: 140 },
+            { month: 'ก.ค.', depot: 'หนองแค', vehicleType: 'สิบล้อ', gt150: 95, lt150Pair: 1, prevPct: 0.10, oppCost: 5700, extraCost: 140 },
+            { month: 'ก.ค.', depot: 'ศรีราชา', vehicleType: 'สิบล้อ', gt150: 195, lt150Pair: 0, prevPct: 0.00, oppCost: 0, extraCost: 0 }
         ];
 
         const monthDetailsMap = {
@@ -436,57 +455,6 @@
         let stackedStatsChartInstance = null;
         let autoSyncTimer = null;
 
-        // Custom Chart DataLabels Plugin Definition
-        const customDataLabelsPlugin = {
-            id: 'customDataLabelsPlugin',
-            afterDatasetsDraw(chart) {
-                const ctx = chart.ctx;
-                ctx.save();
-                ctx.font = 'bold 11px Sarabun, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
-                const meta0 = chart.getDatasetMeta(0); // >150km (Emerald)
-                const meta1 = chart.getDatasetMeta(1); // <150km pair (Crimson)
-
-                meta0.data.forEach((bar0, index) => {
-                    const bar1 = meta1.data[index];
-                    const val0 = chart.data.datasets[0].data[index]; // % >150
-                    const val1 = chart.data.datasets[1].data[index]; // % <150 pair
-
-                    // 1. Draw Emerald Bar label (% >150) inside bar
-                    if (val0 > 15 && bar0 && !bar0.hidden) {
-                        ctx.fillStyle = '#ffffff';
-                        ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-                        ctx.shadowBlur = 3;
-                        const midY = bar0.y + (bar0.height / 2);
-                        ctx.fillText(val0.toFixed(2) + '%', bar0.x, midY);
-                        ctx.shadowBlur = 0;
-                    }
-
-                    // 2. Draw Red Alert Bar label ONLY if val1 > 0
-                    if (val1 > 0 && bar1 && !bar1.hidden) {
-                        ctx.fillStyle = '#dc2626';
-                        ctx.shadowColor = 'transparent';
-                        const labelText = val1.toFixed(2) + '%';
-                        
-                        if (bar1.height > 22) {
-                            // High red bar: draw inside bar
-                            ctx.fillStyle = '#ffffff';
-                            ctx.shadowColor = 'rgba(0,0,0,0.4)';
-                            ctx.shadowBlur = 3;
-                            ctx.fillText(labelText, bar1.x, bar1.y + (bar1.height / 2));
-                            ctx.shadowBlur = 0;
-                        } else {
-                            // Low red bar: draw neatly above bar
-                            ctx.fillText(labelText, bar1.x, bar1.y - 12);
-                        }
-                    }
-                });
-                ctx.restore();
-            }
-        };
-
         window.googleSheetCallback = function(json) {
             if (window.sheetResolveHandler) window.sheetResolveHandler(json);
         };
@@ -494,27 +462,6 @@
         window.googleDetailSheetCallback = function(json) {
             if (window.detailSheetResolveHandler) window.detailSheetResolveHandler(json);
         };
-
-        function updateStatus(type, message) {
-            const badge = document.getElementById('statusBadge');
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            if (!badge || !dot || !text) return;
-
-            if (type === 'loading') {
-                dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
-                text.innerText = message || 'กำลังโหลด...';
-                text.className = 'text-amber-300 font-medium';
-            } else if (type === 'connected') {
-                dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-500';
-                text.innerText = message || 'Live Connected';
-                text.className = 'text-emerald-300 font-medium';
-            } else if (type === 'error') {
-                dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
-                text.innerText = message || 'เชื่อมต่อไม่สำเร็จ';
-                text.className = 'text-rose-300 font-medium';
-            }
-        }
 
         function updateContextBanner() {
             try {
@@ -549,19 +496,6 @@
             filterCurrentMonthData();
         }
 
-        function filterVehicleType() {
-            const vehicleFilterEl = document.getElementById('vehicleTypeFilter');
-            const selectedType = vehicleFilterEl ? vehicleFilterEl.value : 'สิบล้อ';
-            
-            let filtered = rawSheetData.filter(item => item.vehicleType === selectedType);
-            if (filtered.length === 0 && rawSheetData.length > 0) {
-                filtered = [...rawSheetData];
-            }
-
-            updateContextBanner();
-            renderDashboard(filtered);
-        }
-
         function filterCurrentMonthData() {
             const monthSelectEl = document.getElementById('monthSelect');
             const selectedMonth = monthSelectEl ? monthSelectEl.value : 'ส.ค.';
@@ -589,22 +523,6 @@
             }
 
             filterVehicleType();
-        }
-
-        function updateAutoSyncTimer() {
-            if (autoSyncTimer) clearInterval(autoSyncTimer);
-            const selectEl = document.getElementById('autoSyncIntervalSelect');
-            const interval = selectEl ? parseInt(selectEl.value, 10) : 10000;
-            const spinner = document.getElementById('syncSpinner');
-
-            if (interval > 0) {
-                if (spinner) spinner.classList.add('animate-spin');
-                autoSyncTimer = setInterval(() => {
-                    connectGoogleSheet(true);
-                }, interval);
-            } else {
-                if (spinner) spinner.classList.remove('animate-spin');
-            }
         }
 
         function parseNumVal(cell) {
@@ -873,283 +791,370 @@
 
         function parseDetailSheetRows(rows) {
             const list = [];
-            // เริ่มต้นอ่านแถวที่ 5 เป็นต้นไป (Index 4 เป็นต้นไป ข้าม Index 0,1,2,3 ซึ่งเป็นหัวตาราง A4:L4)
-            for (let rIdx = 4; rIdx < rows.length; rIdx++) {
-                const r = rows[rIdx];
-                if (!r || !r.c || r.c.length === 0) continue;
+            rows.forEach((r) => {
+                if (!r || !r.c || r.c.length === 0) return;
 
-                const getCellStr = (colIdx) => {
-                    if (!r.c[colIdx]) return '';
-                    const cell = r.c[colIdx];
-                    return String(cell.v !== null && cell.v !== undefined ? cell.v : (cell.f || '')).trim();
-                };
+                const col0 = r.c[0] ? String(r.c[0].v !== null && r.c[0].v !== undefined ? r.c[0].v : (r.c[0].f || '')).trim() : '';
+                const col2 = r.c[2] ? String(r.c[2].v !== null && r.c[2].v !== undefined ? r.c[2].v : (r.c[2].f || '')).trim() : '';
 
-                const col0 = getCellStr(0); // คลัง (Column A)
-                if (!col0 || col0.toLowerCase() === 'คลัง' || col0.includes('ระยะทาง')) continue;
+                // Filter out Header Rows A1:L4
+                if (!col0 || 
+                    col0.toLowerCase() === 'คลัง' || 
+                    col0.includes('ระยะทาง') || 
+                    col0.includes('ข้อมูล') || 
+                    col2.toLowerCase().includes('shipment') || 
+                    col2.toLowerCase().includes('เลขที่')) {
+                    return;
+                }
 
+                // Parse Data Rows (Row 5 onwards)
                 list.push({
-                    depot: col0,                                   // Col A (Index 0)
-                    date: formatCellDate(r.c[1]),                  // Col B (Index 1)
-                    shipmentNo: getCellStr(2) || '-',              // Col C (Index 2)
-                    ref: getCellStr(3) || '-',                     // Col D (Index 3)
-                    driverName: getCellStr(4) || '-',              // Col E (Index 4)
-                    shipToName: getCellStr(5) || '-',              // Col F (Index 5)
-                    vehicleType: getCellStr(6) || 'W',             // Col G (Index 6)
-                    truckNo: getCellStr(7) || '-',                 // Col H (Index 7)
-                    plate: getCellStr(8) || '-',                   // Col I (Index 8)
-                    distance: parseNumVal(r.c[9]),                 // Col J (Index 9)
-                    qty: parseNumVal(r.c[10]),                     // Col K (Index 10)
-                    totalQty: parseNumVal(r.c[11]),                // Col L (Index 11)
-                    month: getCellStr(12)
+                    depot: col0,                                                         // Col A: คลัง
+                    date: formatCellDate(r.c[1]),                                       // Col B: วันที่
+                    shipmentNo: r.c[2] ? String(r.c[2].f || r.c[2].v || '').trim() : '-',// Col C: Shipment No.
+                    ref: r.c[3] ? String(r.c[3].f || r.c[3].v || '').trim() : '-',       // Col D: Reference
+                    driverName: r.c[4] ? String(r.c[4].v || r.c[4].f || '').trim() : '-',// Col E: Driver name
+                    shipToName: r.c[5] ? String(r.c[5].v || r.c[5].f || '').trim() : '-',// Col F: Ship to name
+                    vehicleType: r.c[6] ? String(r.c[6].v || r.c[6].f || '').trim() : 'W',// Col G: ประเภท (W / T)
+                    truckNo: r.c[7] ? String(r.c[7].f || r.c[7].v || '').trim() : '-',  // Col H: เบอร์รถ
+                    plate: r.c[8] ? String(r.c[8].v || r.c[8].f || '').trim() : '-',    // Col I: ทะเบียนรถ
+                    distance: parseNumVal(r.c[9]),                                      // Col J: ระยะทาง
+                    qty: parseNumVal(r.c[10]),                                          // Col K: ยอดขน
+                    totalQty: parseNumVal(r.c[11]),                                     // Col L: รวมยอดขน
+                    month: r.c[12] ? String(r.c[12].v || r.c[12].f || '').trim() : ''   // Col M: เดือน
                 });
-            }
+            });
             return list;
         }
 
-        function renderDashboard(data) {
-            if (!data) data = rawSheetData;
-            updateKPIs(data);
-            renderTable(data);
-            renderChart(data);
+        function updateAutoSyncTimer() {
+            if (autoSyncTimer) { clearInterval(autoSyncTimer); autoSyncTimer = null; }
+            const autoSyncEl = document.getElementById('autoSyncIntervalSelect');
+            const intervalMs = autoSyncEl ? parseInt(autoSyncEl.value, 10) : 10000;
+            const spinner = document.getElementById('syncSpinner');
+
+            if (intervalMs > 0) {
+                if (spinner) spinner.classList.add('animate-spin');
+                autoSyncTimer = setInterval(() => { connectGoogleSheet(true); }, intervalMs);
+            } else {
+                if (spinner) spinner.classList.remove('animate-spin');
+            }
         }
 
-        function updateKPIs(data) {
-            let totalTripsSum = 0;
-            let shortPairSum = 0;
-            let sumDiffPct = 0;
-            const depotCount = data.length || 1;
+        function updateStatus(type, text) {
+            const dot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            if (statusText) statusText.innerText = text;
+            if (dot) {
+                if (type === 'loading') dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
+                else if (type === 'connected') dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-500';
+                else if (type === 'error') dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+                else dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
+            }
+        }
 
-            data.forEach(item => {
-                const gt = item.gt150 || 0;
-                const lt = item.lt150Pair || 0;
-                const tot = gt + lt;
-                totalTripsSum += tot;
-                shortPairSum += lt;
+        function filterVehicleType() {
+            updateContextBanner();
+            const vehicleFilterEl = document.getElementById('vehicleTypeFilter');
+            const selectedType = vehicleFilterEl ? vehicleFilterEl.value : 'สิบล้อ';
+            let filtered = rawSheetData.filter(item => item.vehicleType === selectedType);
+            if (filtered.length === 0 && rawSheetData.length > 0) filtered = [...rawSheetData];
+            renderDashboard(filtered);
+        }
 
-                const pctLt = tot > 0 ? (lt / tot) * 100 : 0;
-                const diff = pctLt - (item.prevPct || 0);
-                sumDiffPct += diff;
+        function renderDashboard(data) {
+            let totalGt150 = 0, totalLt150Pair = 0, totalOppCost = 0, totalExtraCost = 0, sumPrevPct = 0;
+
+            const processed = data.map(item => {
+                const total = item.gt150 + item.lt150Pair;
+                const pctGt150 = total > 0 ? (item.gt150 / total) * 100 : 0;
+                const pctLt150Pair = total > 0 ? (item.lt150Pair / total) * 100 : 0;
+                const diffPct = pctLt150Pair - item.prevPct;
+
+                totalGt150 += item.gt150;
+                totalLt150Pair += item.lt150Pair;
+                totalOppCost += item.oppCost;
+                totalExtraCost += item.extraCost;
+                sumPrevPct += item.prevPct;
+
+                return { ...item, total, pctGt150, pctLt150Pair, diffPct };
             });
 
-            const kpiTotalTripsEl = document.getElementById('kpiTotalTrips');
-            if (kpiTotalTripsEl) {
-                kpiTotalTripsEl.innerHTML = `${totalTripsSum.toLocaleString()} <span class="text-xs font-semibold text-slate-500">เที่ยว</span>`;
+            const count = processed.length;
+            const grandTotalTrips = totalGt150 + totalLt150Pair;
+            const avgTotalTrips = count > 0 ? Math.round(grandTotalTrips / count) : 0;
+            const avgPctGt150 = grandTotalTrips > 0 ? (totalGt150 / grandTotalTrips) * 100 : 0;
+            const avgPctLt150Pair = grandTotalTrips > 0 ? (totalLt150Pair / grandTotalTrips) * 100 : 0;
+            const avgPrevPct = count > 0 ? (sumPrevPct / count) : 0;
+            const avgDiffPct = avgPctLt150Pair - avgPrevPct;
+
+            // Update KPI Cards
+            const totalTripsEl = document.getElementById('kpiTotalTrips');
+            if (totalTripsEl) totalTripsEl.innerHTML = `${grandTotalTrips.toLocaleString()} <span class="text-xs font-semibold text-slate-500">เที่ยว</span>`;
+            
+            const depotAvgEl = document.getElementById('kpiDepotAvg');
+            if (depotAvgEl) depotAvgEl.innerHTML = `<span class="text-emerald-600 font-bold mr-1">${count} คลัง</span> เฉลี่ย ${avgTotalTrips.toLocaleString()} เที่ยว/คลัง`;
+            
+            const shortPairEl = document.getElementById('kpiShortPairTrips');
+            if (shortPairEl) shortPairEl.innerHTML = `${totalLt150Pair.toLocaleString()} <span class="text-xs font-semibold text-slate-500">เที่ยว</span>`;
+            
+            const diffRateEl = document.getElementById('kpiDiffRate');
+            if (diffRateEl) {
+                const diffSign = avgDiffPct > 0 ? '+' : '';
+                const diffColorClass = avgDiffPct <= 0 ? 'text-emerald-600' : 'text-rose-600';
+                const diffIcon = avgDiffPct <= 0 ? 'fa-arrow-down' : 'fa-arrow-up';
+                diffRateEl.className = `mt-2 flex items-center text-xs ${diffColorClass} font-bold`;
+                diffRateEl.innerHTML = `<i class="fa-solid ${diffIcon} mr-1"></i> <span>Diff ${diffSign}${avgDiffPct.toFixed(2)}%</span> <span class="text-slate-400 font-normal ml-1.5">(เฉลี่ย ${avgPctLt150Pair.toFixed(2)}%)</span>`;
             }
 
-            const kpiDepotAvgEl = document.getElementById('kpiDepotAvg');
-            if (kpiDepotAvgEl) {
-                const avgPerDepot = Math.round(totalTripsSum / depotCount);
-                kpiDepotAvgEl.innerHTML = `<span class="text-emerald-600 font-bold mr-1">${depotCount} คลัง</span> เฉลี่ย ${avgPerDepot.toLocaleString()} เที่ยว/คลัง`;
-            }
+            renderTableRows(processed, {
+                avgGt150: count > 0 ? Math.round(totalGt150 / count) : 0,
+                avgLt150Pair: count > 0 ? Math.round(totalLt150Pair / count) : 0,
+                avgTotalTrips, avgPctGt150, avgPctLt150Pair, avgPrevPct, avgDiffPct,
+                avgOppCost: count > 0 ? Math.round(totalOppCost / count) : 0,
+                avgExtraCost: count > 0 ? Math.round(totalExtraCost / count) : 0,
+                totalOppCost, totalExtraCost
+            });
 
-            const kpiShortPairTripsEl = document.getElementById('kpiShortPairTrips');
-            if (kpiShortPairTripsEl) {
-                kpiShortPairTripsEl.innerHTML = `${shortPairSum.toLocaleString()} <span class="text-xs font-semibold text-slate-500">เที่ยว</span>`;
-            }
-
-            const avgDiffRate = (sumDiffPct / depotCount).toFixed(2);
-            const kpiDiffTextEl = document.getElementById('kpiDiffText');
-            const kpiDiffRateEl = document.getElementById('kpiDiffRate');
-
-            if (kpiDiffTextEl && kpiDiffRateEl) {
-                if (avgDiffRate > 0) {
-                    kpiDiffRateEl.className = 'mt-2 flex items-center text-xs font-bold text-rose-600';
-                    kpiDiffRateEl.firstElementChild.className = 'fa-solid fa-arrow-up mr-1';
-                    kpiDiffTextEl.innerText = `+${avgDiffRate}%`;
-                } else {
-                    kpiDiffRateEl.className = 'mt-2 flex items-center text-xs font-bold text-emerald-600';
-                    kpiDiffRateEl.firstElementChild.className = 'fa-solid fa-arrow-down mr-1';
-                    kpiDiffTextEl.innerText = `${avgDiffRate}%`;
-                }
-            }
+            renderCharts(processed, { avgPctGt150, avgPctLt150Pair });
         }
 
-        function renderTable(data) {
+        function renderTableRows(items, summary) {
             const tbody = document.getElementById('tableBody');
-            const tfoot = document.getElementById('tableFoot');
-            if (!tbody || !tfoot) return;
-
+            if (!tbody) return;
             tbody.innerHTML = '';
-            tfoot.innerHTML = '';
 
-            let sumGt150 = 0, sumLt150Pair = 0, sumTotal = 0;
-            let sumPrevPct = 0, sumOppCost = 0, sumExtraCost = 0;
-
-            data.forEach((item) => {
-                const gt = item.gt150 || 0;
-                const lt = item.lt150Pair || 0;
-                const total = gt + lt;
-                const pctGt = total > 0 ? ((gt / total) * 100).toFixed(2) : '0.00';
-                const pctLt = total > 0 ? ((lt / total) * 100).toFixed(2) : '0.00';
-                const prevPct = (item.prevPct || 0).toFixed(2);
-                const diff = (parseFloat(pctLt) - parseFloat(prevPct)).toFixed(2);
-
-                sumGt150 += gt;
-                sumLt150Pair += lt;
-                sumTotal += total;
-                sumPrevPct += item.prevPct || 0;
-                sumOppCost += item.oppCost || 0;
-                sumExtraCost += item.extraCost || 0;
-
+            items.forEach(item => {
                 const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-100/85 transition-colors border-b border-slate-200/70';
+                tr.className = 'hover:bg-emerald-50/60 transition cursor-pointer';
 
-                const ltPairClass = lt > 0 ? 'bg-red-50 font-bold text-red-600' : '';
-                const pctLtClass = parseFloat(pctLt) > 0 ? 'bg-red-50 font-bold text-red-600' : '';
-                
-                let diffClass = 'text-slate-600';
-                if (parseFloat(diff) > 0) diffClass = 'text-red-600 font-bold bg-red-50/50';
-                else if (parseFloat(diff) < 0) diffClass = 'text-emerald-600 font-bold';
+                const vBadgeClass = item.vehicleType === 'เทรลเลอร์' 
+                    ? 'bg-purple-100 text-purple-800 border-purple-300' 
+                    : 'bg-emerald-100 text-emerald-800 border-emerald-300';
+
+                let curPctBg = '';
+                if (item.pctLt150Pair > 1.0) curPctBg = 'bg-rose-100 text-rose-950 font-extrabold';
+                else if (item.pctLt150Pair > 0) curPctBg = 'bg-amber-50 text-amber-900 font-semibold';
+
+                const diffFormatted = (item.diffPct > 0 ? '+' : '') + item.diffPct.toFixed(2) + '%';
+                const diffClass = item.diffPct > 0 ? 'font-bold text-rose-600 bg-rose-50' : (item.diffPct < 0 ? 'font-bold text-emerald-600 bg-emerald-50' : 'text-slate-400');
 
                 tr.innerHTML = `
-                    <td class="py-2.5 px-3 text-left font-bold text-slate-800 cursor-pointer hover:text-emerald-600 transition flex items-center gap-1.5" onclick="openDepotDetail('${item.depot}', '${item.vehicleType}')">
-                        <i class="fa-solid fa-folder-open text-emerald-500 text-[10px]"></i>
+                    <td class="py-2.5 px-3 text-left font-semibold text-emerald-700 hover:text-emerald-900 underline underline-offset-2 flex items-center gap-1.5" onclick="openDepotDetail('${item.depot}', '${item.vehicleType}')">
+                        <i class="fa-solid fa-circle-info text-emerald-500 text-[11px]"></i>
                         <span>${item.depot}</span>
                     </td>
-                    <td class="py-2.5 px-2 text-center text-slate-500 font-medium">${item.vehicleType || 'สิบล้อ'}</td>
-                    <td class="py-2.5 px-3">${gt.toLocaleString()}</td>
-                    <td class="py-2.5 px-3 ${ltPairClass}">${lt.toLocaleString()}</td>
-                    <td class="py-2.5 px-3 font-semibold text-slate-900">${total.toLocaleString()}</td>
-                    <td class="py-2.5 px-3 border-r border-slate-200">${pctGt}%</td>
-                    <td class="py-2.5 px-3 border-r border-slate-200 ${pctLtClass}">${pctLt}%</td>
-                    <td class="py-2.5 px-3 border-r border-slate-200">${prevPct}%</td>
-                    <td class="py-2.5 px-3 border-r border-slate-200 ${diffClass}">${diff > 0 ? '+' + diff : diff}%</td>
-                    <td class="py-2.5 px-3 text-right font-medium">${item.oppCost ? '฿' + item.oppCost.toLocaleString() : '-'}</td>
-                    <td class="py-2.5 px-3 text-right font-medium">${item.extraCost ? '฿' + item.extraCost.toLocaleString() : '-'}</td>
+                    <td class="py-2.5 px-2 text-center"><span class="px-2 py-0.5 text-[10px] rounded-full border font-semibold ${vBadgeClass}">${item.vehicleType}</span></td>
+                    <td class="py-2.5 px-3 font-medium">${item.gt150.toLocaleString()}</td>
+                    <td class="py-2.5 px-3 font-bold ${item.lt150Pair > 0 ? 'text-rose-600' : 'text-slate-400'}">${item.lt150Pair}</td>
+                    <td class="py-2.5 px-3 font-medium">${item.total.toLocaleString()}</td>
+                    <td class="py-2.5 px-3 font-medium">${item.pctGt150.toFixed(2)}%</td>
+                    <td class="py-2.5 px-3 ${curPctBg}">${item.pctLt150Pair.toFixed(2)}%</td>
+                    <td class="py-2.5 px-3">${item.prevPct.toFixed(2)}%</td>
+                    <td class="py-2.5 px-3 ${diffClass}">${diffFormatted}</td>
+                    <td class="py-2.5 px-3 text-right ${item.oppCost > 0 ? 'font-semibold text-rose-600' : 'text-slate-400'}">${item.oppCost.toLocaleString()}</td>
+                    <td class="py-2.5 px-3 text-right ${item.extraCost > 0 ? '' : 'text-slate-400'}">${item.extraCost.toLocaleString()}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            const depotCount = data.length || 1;
-            const avgGtPct = sumTotal > 0 ? ((sumGt150 / sumTotal) * 100).toFixed(2) : '0.00';
-            const avgLtPct = sumTotal > 0 ? ((sumLt150Pair / sumTotal) * 100).toFixed(2) : '0.00';
-            const avgPrevPct = (sumPrevPct / depotCount).toFixed(2);
-            const avgDiff = (parseFloat(avgLtPct) - parseFloat(avgPrevPct)).toFixed(2);
+            const tfoot = document.getElementById('tableFoot');
+            if (!tfoot) return;
+            const diffAvgFormatted = (summary.avgDiffPct > 0 ? '+' : '') + summary.avgDiffPct.toFixed(2) + '%';
+            const diffAvgClass = summary.avgDiffPct <= 0 ? 'text-emerald-600' : 'text-rose-600';
 
             tfoot.innerHTML = `
-                <tr class="divide-x divide-slate-200/80 bg-emerald-100/60 font-black">
-                    <td class="py-3 px-3 text-left text-slate-900">Total / Avg Summary</td>
-                    <td class="py-3 px-2 text-center text-slate-700">-</td>
-                    <td class="py-3 px-3 text-center">${sumGt150.toLocaleString()}</td>
-                    <td class="py-3 px-3 text-center text-rose-700">${sumLt150Pair.toLocaleString()}</td>
-                    <td class="py-3 px-3 text-center text-slate-900">${sumTotal.toLocaleString()}</td>
-                    <td class="py-3 px-3 text-center">${avgGtPct}%</td>
-                    <td class="py-3 px-3 text-center text-rose-700">${avgLtPct}%</td>
-                    <td class="py-3 px-3 text-center">${avgPrevPct}%</td>
-                    <td class="py-3 px-3 text-center ${avgDiff > 0 ? 'text-rose-700' : 'text-emerald-700'}">${avgDiff > 0 ? '+' + avgDiff : avgDiff}%</td>
-                    <td class="py-3 px-3 text-right text-slate-900">฿${sumOppCost.toLocaleString()}</td>
-                    <td class="py-3 px-3 text-right text-slate-900">฿${sumExtraCost.toLocaleString()}</td>
+                <tr class="bg-slate-100/90 font-bold">
+                    <td class="py-2.5 px-3 text-left" colspan="2">Avg. (เฉลี่ย)</td>
+                    <td class="py-2.5 px-3">${summary.avgGt150.toLocaleString()}</td>
+                    <td class="py-2.5 px-3 text-rose-600">${summary.avgLt150Pair}</td>
+                    <td class="py-2.5 px-3">${summary.avgTotalTrips.toLocaleString()}</td>
+                    <td class="py-2.5 px-3">${summary.avgPctGt150.toFixed(2)}%</td>
+                    <td class="py-2.5 px-3">${summary.avgPctLt150Pair.toFixed(2)}%</td>
+                    <td class="py-2.5 px-3">${summary.avgPrevPct.toFixed(2)}%</td>
+                    <td class="py-2.5 px-3 ${diffAvgClass}">${diffAvgFormatted}</td>
+                    <td class="py-2.5 px-3 text-right">${summary.avgOppCost.toLocaleString()}</td>
+                    <td class="py-2.5 px-3 text-right">${summary.avgExtraCost.toLocaleString()}</td>
+                </tr>
+                <tr class="bg-emerald-100 text-emerald-950 font-extrabold text-sm border-t border-emerald-200">
+                    <td class="py-3 px-3 text-left" colspan="9">Total (รวมทั้งสิ้น)</td>
+                    <td class="py-3 px-3 text-right text-rose-700">${summary.totalOppCost.toLocaleString()}</td>
+                    <td class="py-3 px-3 text-right text-emerald-900">${summary.totalExtraCost.toLocaleString()}</td>
                 </tr>
             `;
         }
 
-        function renderChart(data) {
-            const canvas = document.getElementById('stackedStatsChart');
-            if (!canvas) return;
+        function renderCharts(items, summary) {
+            const stackedCanvas = document.getElementById('stackedStatsChart');
+            if (!stackedCanvas) return;
 
-            const labels = data.map(d => d.depot);
-            const gt150PctData = [];
-            const lt150PairPctData = [];
+            const depotLabels = items.map(i => i.depot);
+            depotLabels.push('Avg.');
 
-            let maxAnomalyVal = 0;
-            let topAnomalyDepot = '-';
+            const greenPctData = items.map(i => parseFloat(i.pctGt150.toFixed(2)));
+            greenPctData.push(parseFloat(summary.avgPctGt150.toFixed(2)));
 
-            data.forEach(d => {
-                const gt = d.gt150 || 0;
-                const lt = d.lt150Pair || 0;
-                const tot = gt + lt;
+            const redPctData = items.map(i => parseFloat(i.pctLt150Pair.toFixed(2)));
+            redPctData.push(parseFloat(summary.avgPctLt150Pair.toFixed(2)));
 
-                const pctGt = tot > 0 ? parseFloat(((gt / tot) * 100).toFixed(2)) : 100;
-                const pctLt = tot > 0 ? parseFloat(((lt / tot) * 100).toFixed(2)) : 0;
-
-                gt150PctData.push(pctGt);
-                lt150PairPctData.push(pctLt);
-
-                if (pctLt > maxAnomalyVal) {
-                    maxAnomalyVal = pctLt;
-                    topAnomalyDepot = `${d.depot} (${pctLt.toFixed(2)}%)`;
+            // Find top anomaly depot
+            let maxAnomalyVal = -1;
+            let maxAnomalyDepot = '-';
+            items.forEach(i => {
+                if (i.pctLt150Pair > maxAnomalyVal) {
+                    maxAnomalyVal = i.pctLt150Pair;
+                    maxAnomalyDepot = i.depot;
                 }
             });
 
-            const topDepotEl = document.getElementById('topAnomalyDepotName');
-            if (topDepotEl) topDepotEl.innerText = maxAnomalyVal > 0 ? topAnomalyDepot : 'ไม่มีคลังสุ่มเสี่ยง (0.00%)';
-
-            if (stackedStatsChartInstance) {
-                stackedStatsChartInstance.destroy();
+            const topAnomalyEl = document.getElementById('topAnomalyDepotName');
+            if (topAnomalyEl) {
+                if (maxAnomalyVal > 0) {
+                    topAnomalyEl.innerText = `${maxAnomalyDepot} (${maxAnomalyVal.toFixed(2)}%)`;
+                } else {
+                    topAnomalyEl.innerText = 'ไม่มีปกติ (0.00%)';
+                }
             }
 
-            const ctx = canvas.getContext('2d');
+            if (stackedStatsChartInstance) stackedStatsChartInstance.destroy();
+            const ctxStacked = stackedCanvas.getContext('2d');
 
-            const emeraldGrad = ctx.createLinearGradient(0, 0, 0, 400);
-            emeraldGrad.addColorStop(0, '#10b981');
-            emeraldGrad.addColorStop(1, '#047857');
+            // Emerald & Red Gradients
+            const greenGradient = ctxStacked.createLinearGradient(0, 0, 0, 300);
+            greenGradient.addColorStop(0, '#10b981');
+            greenGradient.addColorStop(1, '#047857');
 
-            const crimsonGrad = ctx.createLinearGradient(0, 0, 0, 400);
-            crimsonGrad.addColorStop(0, '#f43f5e');
-            crimsonGrad.addColorStop(1, '#be123c');
+            const redGradient = ctxStacked.createLinearGradient(0, 0, 0, 300);
+            redGradient.addColorStop(0, '#f43f5e');
+            redGradient.addColorStop(1, '#e11d48');
 
-            stackedStatsChartInstance = new Chart(ctx, {
+            const sleekLabelsPlugin = {
+                id: 'sleekLabelsPlugin',
+                afterDatasetsDraw(chart) {
+                    const { ctx } = chart;
+                    ctx.save();
+
+                    const greenMeta = chart.getDatasetMeta(0);
+                    const redMeta = chart.getDatasetMeta(1);
+
+                    // Green Bar Labels
+                    if (greenMeta && !greenMeta.hidden) {
+                        greenMeta.data.forEach((element, index) => {
+                            const val = chart.data.datasets[0].data[index];
+                            if (val === undefined || val === null) return;
+
+                            const barHeight = element.base - element.y;
+                            if (barHeight >= 20) {
+                                const valStr = val.toFixed(2) + '%';
+                                ctx.font = 'bold 11px Sarabun, sans-serif';
+                                ctx.fillStyle = '#ffffff';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillText(valStr, element.x, element.y + (barHeight / 2));
+                            }
+                        });
+                    }
+
+                    // Floating Red Labels (only if > 0%)
+                    if (redMeta && !redMeta.hidden) {
+                        redMeta.data.forEach((element, index) => {
+                            const val = chart.data.datasets[1].data[index];
+                            if (val === undefined || val === null || val <= 0) return;
+
+                            const valStr = val.toFixed(2) + '%';
+                            const redBarHeight = element.base - element.y;
+
+                            ctx.font = 'bold 12px Sarabun, sans-serif';
+                            ctx.textAlign = 'center';
+
+                            if (redBarHeight >= 24) {
+                                ctx.fillStyle = '#ffffff';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillText(valStr, element.x, element.y + (redBarHeight / 2));
+                            } else {
+                                const labelY = element.y - 12;
+                                ctx.fillStyle = '#e11d48';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillText(valStr, element.x, labelY);
+                            }
+                        });
+                    }
+
+                    ctx.restore();
+                }
+            };
+
+            stackedStatsChartInstance = new Chart(ctxStacked, {
                 type: 'bar',
                 data: {
-                    labels: labels,
+                    labels: depotLabels,
                     datasets: [
                         {
-                            label: '% >150 (ระยะทางปกติ)',
-                            data: gt150PctData,
-                            backgroundColor: emeraldGrad,
-                            borderRadius: 6,
-                            borderSkipped: false,
+                            label: '% >150 (ระยะปกติ)',
+                            data: greenPctData,
+                            backgroundColor: greenGradient,
+                            stack: 'Stack 0',
                             barPercentage: 0.82,
-                            categoryPercentage: 0.88
+                            categoryPercentage: 0.88,
+                            borderRadius: { topLeft: 0, topRight: 0, bottomLeft: 6, bottomRight: 6 }
                         },
                         {
                             label: '% <150 ขับคู่ (ซ้อนบนสุด)',
-                            data: lt150PairPctData,
-                            backgroundColor: crimsonGrad,
-                            borderRadius: 6,
-                            borderSkipped: false,
+                            data: redPctData,
+                            backgroundColor: redGradient,
+                            stack: 'Stack 0',
                             barPercentage: 0.82,
-                            categoryPercentage: 0.88
+                            categoryPercentage: 0.88,
+                            borderRadius: { topLeft: 6, topRight: 6, bottomLeft: 0, bottomRight: 0 }
                         }
                     ]
                 },
-                plugins: [customDataLabelsPlugin],
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            stacked: true,
-                            grid: { display: false },
-                            ticks: { font: { family: 'Sarabun', size: 12, weight: 'bold' }, color: '#334155' }
-                        },
-                        y: {
-                            stacked: true,
-                            max: 135,
-                            grid: { color: '#f1f5f9' },
-                            ticks: {
-                                callback: value => value <= 100 ? value + '%' : '',
-                                font: { family: 'Sarabun', size: 11 },
-                                color: '#64748b'
-                            }
-                        }
+                    layout: {
+                        padding: { top: 28, bottom: 5 }
                     },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: '#0f172a',
-                            titleFont: { family: 'Sarabun', size: 13, weight: 'bold' },
-                            bodyFont: { family: 'Sarabun', size: 12 },
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleFont: { family: 'Sarabun', size: 12, weight: 'bold' },
+                            bodyFont: { family: 'Sarabun', size: 11 },
                             padding: 12,
                             cornerRadius: 12,
+                            boxPadding: 6,
                             callbacks: {
                                 label: function(context) {
-                                    return ` ${context.dataset.label}: ${context.raw.toFixed(2)}%`;
+                                    return ` ${context.dataset.label}: ${context.raw}%`;
                                 }
                             }
                         }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: { display: false },
+                            ticks: {
+                                font: { family: 'Sarabun', size: 11, weight: 'bold' },
+                                color: '#1e293b'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 130,
+                            ticks: {
+                                stepSize: 25,
+                                callback: function(value) { return value.toFixed(0) + '%'; },
+                                font: { family: 'Sarabun', size: 10 },
+                                color: '#64748b'
+                            },
+                            grid: { color: '#f1f5f9' }
+                        }
                     }
-                }
+                },
+                plugins: [sleekLabelsPlugin]
             });
         }
 
@@ -1162,36 +1167,24 @@
             const vehicleFilterEl = document.getElementById('vehicleTypeFilter');
             const currentVehicleFilter = vehicleFilterEl ? vehicleFilterEl.value : (vehicleType || 'สิบล้อ');
 
-            const normTargetDepot = depotName.replace(/^คลัง/, '').trim().toLowerCase();
-
-            // Strict Google Sheet Detail Filtering (Real Data Only)
+            // Filter exact depot + vehicle + month from Google Sheet data
             let matchedRows = detailSheetData.filter(d => {
-                if (!d.depot) return false;
-                const normRowDepot = d.depot.replace(/^คลัง/, '').trim().toLowerCase();
+                const matchDepot = d.depot.trim().toLowerCase() === depotName.trim().toLowerCase() ||
+                                   d.depot.trim().includes(depotName.trim());
                 
-                const matchDepot = normRowDepot === normTargetDepot || 
-                                   normRowDepot.includes(normTargetDepot) || 
-                                   normTargetDepot.includes(normRowDepot);
-                
-                if (!matchDepot) return false;
-
                 let matchVehicle = true;
-                if (d.vehicleType) {
-                    const vt = d.vehicleType.trim().toUpperCase();
-                    if (currentVehicleFilter === 'สิบล้อ') {
-                        matchVehicle = (vt === 'W' || vt.includes('สิบล้อ') || vt.includes('10') || vt === '');
-                    } else if (currentVehicleFilter === 'เทรลเลอร์') {
-                        matchVehicle = (vt === 'T' || vt.includes('เทรลเลอร์') || vt.includes('TRAILER') || vt === '');
-                    }
+                if (currentVehicleFilter === 'สิบล้อ') {
+                    matchVehicle = d.vehicleType === 'W' || d.vehicleType === 'สิบล้อ' || !d.vehicleType;
+                } else if (currentVehicleFilter === 'เทรลเลอร์') {
+                    matchVehicle = d.vehicleType === 'T' || d.vehicleType === 'เทรลเลอร์' || !d.vehicleType;
                 }
 
                 let matchMonth = true;
-                if (d.month && d.month.trim() !== '') {
-                    const m = d.month.trim();
-                    matchMonth = m === selectedMonth || m.includes(selectedMonth) || selectedMonth.includes(m);
+                if (d.month) {
+                    matchMonth = d.month === selectedMonth || d.month.includes(selectedMonth);
                 }
 
-                return matchVehicle && matchMonth;
+                return matchDepot && matchVehicle && matchMonth;
             });
 
             activeDetailRows = matchedRows;
@@ -1216,7 +1209,7 @@
             tbody.innerHTML = '';
 
             if (rows.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="py-12 text-center text-emerald-700 font-semibold bg-emerald-50/30">
+                tbody.innerHTML = `<tr><td colspan="12" class="py-12 text-center text-emerald-700 font-semibold bg-emerald-50/30">
                     <i class="fa-solid fa-circle-check text-emerald-500 text-2xl mb-2 block"></i>
                     ไม่พบรายการเที่ยววิ่งระยะทาง &lt;150 km ขับคู่ ประจำคลังนี้
                 </td></tr>`;
@@ -1229,16 +1222,18 @@
                 const distanceClass = (r.distance > 0 && r.distance < 150) ? 'font-bold text-rose-600 bg-rose-50' : '';
 
                 tr.innerHTML = `
-                    <td class="py-2.5 px-3 text-center text-slate-600">${r.date}</td>
-                    <td class="py-2.5 px-3 text-center text-slate-900 font-semibold">${r.shipmentNo}</td>
-                    <td class="py-2.5 px-3 text-center text-slate-600">${r.ref}</td>
-                    <td class="py-2.5 px-3 text-left font-medium text-slate-900">${r.driverName}</td>
-                    <td class="py-2.5 px-3 text-left text-slate-700">${r.shipToName}</td>
-                    <td class="py-2.5 px-3 text-center font-bold text-slate-800">${r.truckNo}</td>
-                    <td class="py-2.5 px-3 text-center text-slate-700">${r.plate}</td>
-                    <td class="py-2.5 px-3 text-right ${distanceClass}">${r.distance ? r.distance : ''}</td>
-                    <td class="py-2.5 px-3 text-right text-slate-900 font-semibold">${r.qty ? r.qty.toLocaleString() : ''}</td>
-                    <td class="py-2.5 px-3 text-right text-slate-900 font-bold">${r.totalQty ? r.totalQty.toLocaleString() : ''}</td>
+                    <td class="py-2 px-3 text-center font-medium text-slate-700">${r.depot}</td>
+                    <td class="py-2 px-3 text-center text-slate-600">${r.date}</td>
+                    <td class="py-2 px-3 text-center text-slate-900 font-semibold">${r.shipmentNo}</td>
+                    <td class="py-2 px-3 text-center text-slate-600">${r.ref}</td>
+                    <td class="py-2 px-3 text-left font-medium text-slate-900">${r.driverName}</td>
+                    <td class="py-2 px-3 text-left text-slate-700">${r.shipToName}</td>
+                    <td class="py-2 px-3 text-center"><span class="px-1.5 py-0.5 text-[10px] bg-slate-100 border border-slate-300 rounded">${r.vehicleType}</span></td>
+                    <td class="py-2 px-3 text-center font-bold text-slate-800">${r.truckNo}</td>
+                    <td class="py-2 px-3 text-center text-slate-700">${r.plate}</td>
+                    <td class="py-2 px-3 text-right ${distanceClass}">${r.distance ? r.distance : ''}</td>
+                    <td class="py-2 px-3 text-right text-slate-900 font-semibold">${r.qty ? r.qty.toLocaleString() : ''}</td>
+                    <td class="py-2 px-3 text-right text-slate-900 font-bold">${r.totalQty ? r.totalQty.toLocaleString() : ''}</td>
                 `;
                 tbody.appendChild(tr);
             });
