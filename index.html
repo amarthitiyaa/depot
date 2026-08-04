@@ -39,11 +39,6 @@
         .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        @keyframes pulse-highlight {
-            0% { background-color: rgba(16, 185, 129, 0.15); }
-            100% { background-color: transparent; }
-        }
-        .data-updated-flash { animation: pulse-highlight 1.5s ease-out; }
     </style>
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white">
@@ -59,41 +54,34 @@
                     <div>
                         <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
                             ระบบวิเคราะห์ประสิทธิภาพการขนส่ง
-                            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 font-semibold px-2 py-0.5 rounded-full border border-emerald-400/30">data150 & Detail150 Pro</span>
+                            <span class="text-[10px] bg-indigo-500/20 text-indigo-300 font-semibold px-2 py-0.5 rounded-full border border-indigo-400/30">Modern Alert Modal</span>
                         </h1>
                         <p class="text-[11px] text-slate-400">Dashboard วิเคราะห์การเดินรถ ต้นทุนส่วนเกิน และงานขับคู่ระยะสั้น</p>
                     </div>
                 </div>
                 
-                <!-- Context Banner -->
-                <div class="flex flex-wrap items-center gap-2.5 bg-slate-950/80 px-4 py-2 rounded-2xl border border-slate-800/80 shadow-inner">
-                    <div class="flex items-center gap-2 border-r border-slate-800 pr-3">
+                <!-- Context Banner & Corporate Email Setter -->
+                <div class="flex flex-wrap items-center gap-3 bg-slate-950/80 px-4 py-2 rounded-2xl border border-slate-800/80 shadow-inner">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">เข้าสู่ระบบด้วยอีเมลองค์กร (@pt.co.th)</p>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <input type="email" id="corporateEmailInput" onchange="saveCorporateEmail()" class="bg-slate-900 text-indigo-300 font-bold text-xs px-2 py-1 rounded border border-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-400 w-52" placeholder="name@pt.co.th">
+                                <button onclick="saveCorporateEmail()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] px-2.5 py-1 rounded font-bold transition">ยืนยัน</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 border-l border-slate-800 pl-3">
                         <div class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-calendar-check"></i>
                         </div>
                         <div class="text-left">
                             <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">ข้อมูลเดือน</p>
                             <p id="contextMonth" class="text-xs font-extrabold text-amber-300">สิงหาคม 2569</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center gap-2 border-r border-slate-800 pr-3">
-                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs">
-                            <i class="fa-solid fa-truck"></i>
-                        </div>
-                        <div class="text-left">
-                            <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">ประเภทรถ</p>
-                            <p id="contextVehicle" class="text-xs font-extrabold text-emerald-400">สิบล้อ</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center text-xs">
-                            <i class="fa-solid fa-clock-rotate-left"></i>
-                        </div>
-                        <div class="text-left">
-                            <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">อัปเดตข้อมูลล่าสุด</p>
-                            <p id="contextUpdateDate" class="text-xs font-extrabold text-sky-300">Live Sync</p>
                         </div>
                     </div>
                 </div>
@@ -193,10 +181,7 @@
                 <div>
                     <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
                         <i class="fa-solid fa-table text-emerald-600"></i>
-                        ตารางสรุปรายงานจำแนกตามคลังสินค้า (ข้อมูลจาก data150)
-                        <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/80 hidden md:inline-block">
-                            คลิกที่ชื่อคลังเพื่อดูรายละเอียดเที่ยววิ่งจาก Detail150
-                        </span>
+                        ตารางสรุปรายงานจำแนกตามคลังสินค้า (ข้อมูลจาก data150) — <span class="text-indigo-600">ระบบแจ้งเตือนผ่าน Modern Modal</span>
                     </h2>
                     <p class="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-2">
                         <span>ข้อมูลประจำ <strong id="currentMonthTitleDisplay" class="text-emerald-700">เดือนสิงหาคม</strong></span>
@@ -223,6 +208,7 @@
                             <th class="bg-slate-600 border-r border-slate-500 py-2.5 px-3">เดือนก่อนหน้า</th>
                             <th class="bg-amber-600 border-r border-amber-500 py-2.5 px-3">Diff.</th>
                             <th colspan="2" class="bg-slate-800 py-2.5 px-3 italic">หน่วย : บาท</th>
+                            <th class="bg-indigo-700 py-2.5 px-3 text-center">Approve รายคลัง</th>
                         </tr>
                         <tr class="text-white font-semibold border-b border-slate-300">
                             <th class="bg-emerald-800 py-2.5 px-3 text-left">คลัง</th>
@@ -236,6 +222,7 @@
                             <th class="bg-amber-700 py-2.5 px-3 border-r border-amber-600">% &lt;150 ขับคู่</th>
                             <th class="bg-slate-900 py-2.5 px-3 text-right">ค่าเสียโอกาสสูงสุด</th>
                             <th class="bg-slate-900 py-2.5 px-3 text-right">ค่าเที่ยวส่วนเกิน</th>
+                            <th class="bg-indigo-800 py-2.5 px-3 text-center">สถานะองค์กร</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-200 text-slate-700"></tbody>
@@ -280,6 +267,47 @@
             <p>© 2026 Logistics & Fleet Performance Analytics System with data150 & Detail150 Integration.</p>
         </div>
     </footer>
+
+    <!-- Modern Notification Alert Modal -->
+    <div id="notificationModal" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-200 transform transition-all text-center p-6 space-y-4">
+            <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl shadow-inner">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-slate-900" id="notifModalTitle">แจ้งเตือนระบบ</h3>
+                <p class="text-xs text-slate-600 mt-1.5 leading-relaxed" id="notifModalMessage">-</p>
+            </div>
+            <button onclick="closeNotificationModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold shadow-md transition">
+                เข้าใจแล้ว
+            </button>
+        </div>
+    </div>
+
+    <!-- Modern Password Prompt Modal -->
+    <div id="passwordModal" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 transform transition-all">
+            <div class="bg-gradient-to-r from-indigo-600 to-slate-900 p-4 text-white flex items-center justify-between">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-amber-300"></i> ยืนยันรหัสผ่านเพื่อยกเลิก Approve
+                </h3>
+                <button onclick="closePasswordModal()" class="text-slate-300 hover:text-white p-1 rounded-lg transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-600 leading-relaxed">คลังนี้ได้รับการอนุมัติเรียบร้อยแล้ว กรุณากรอกรหัสผ่านผู้ดูแลระบบเพื่อทำการยกเลิกการอนุมัติ:</p>
+                <div>
+                    <input type="password" id="unapprovePasswordInput" onkeydown="if(event.key === 'Enter') submitPasswordModal()" placeholder="กรอกรหัสผ่าน..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
+                    <p id="passwordErrorMsg" class="text-[11px] text-rose-600 font-semibold mt-1.5 hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</p>
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button onclick="closePasswordModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition">ยกเลิก</button>
+                    <button onclick="submitPasswordModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-md transition">ยืนยันรหัสผ่าน</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Detail Modal -->
     <div id="detailModal" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
@@ -338,6 +366,99 @@
     </div>
 
     <script>
+        let corporateEmail = localStorage.getItem('corporateEmail') || '';
+        let depotApprovals = JSON.parse(localStorage.getItem('depotApprovals') || '{}');
+        let currentUnapproveKey = null;
+
+        document.getElementById('corporateEmailInput').value = corporateEmail;
+
+        function showNotification(title, message) {
+            document.getElementById('notifModalTitle').innerText = title;
+            document.getElementById('notifModalMessage').innerText = message;
+            document.getElementById('notificationModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNotificationModal() {
+            document.getElementById('notificationModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function saveCorporateEmail() {
+            const emailVal = document.getElementById('corporateEmailInput').value.trim().toLowerCase();
+            if (emailVal) {
+                if (!emailVal.endsWith('@pt.co.th')) {
+                    showNotification('อีเมลไม่ถูกต้อง', 'ต้องใช้อีเมลองค์กรที่ลงท้ายด้วย @pt.co.th เท่านั้น');
+                    document.getElementById('corporateEmailInput').value = corporateEmail;
+                    return;
+                }
+                corporateEmail = emailVal;
+                localStorage.setItem('corporateEmail', corporateEmail);
+                showNotification('เข้าสู่ระบบสำเร็จ', 'เข้าสู่ระบบด้วยอีเมล: ' + corporateEmail);
+                filterVehicleType();
+            } else {
+                showNotification('แจ้งเตือน', 'กรุณากรอกอีเมลองค์กรของคุณ');
+            }
+        }
+
+        function toggleDepotApproval(depot, vehicleType) {
+            const m = document.getElementById('monthSelect').value;
+            const key = `${m}_${depot}_${vehicleType}`;
+            
+            const activeEmail = document.getElementById('corporateEmailInput').value.trim().toLowerCase();
+
+            // ตรวจสอบว่าผู้ใช้กรอกอีเมลองค์กรที่ถูกต้องแล้วหรือยัง
+            if (!activeEmail || !activeEmail.endsWith('@pt.co.th')) {
+                showNotification('ไม่อนุญาตให้ Approve', 'คุณยังไม่ได้กรอกอีเมลองค์กร หรืออีเมลไม่ถูกต้อง (ต้องลงท้ายด้วย @pt.co.th เท่านั้น)');
+                document.getElementById('corporateEmailInput').focus();
+                return;
+            }
+
+            corporateEmail = activeEmail;
+            localStorage.setItem('corporateEmail', corporateEmail);
+
+            // หากคลังนี้อนุมัติไปแล้ว เปิด Modal เพื่อใส่รหัสผ่านยกเลิก
+            if (depotApprovals[key] && depotApprovals[key].approved) {
+                currentUnapproveKey = key;
+                document.getElementById('unapprovePasswordInput').value = '';
+                document.getElementById('passwordErrorMsg').classList.add('hidden');
+                document.getElementById('passwordModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                return;
+            }
+
+            // ถ้ายังไม่เคยอนุมัติ บันทึกการอนุมัติทันที
+            depotApprovals[key] = {
+                approved: true,
+                email: activeEmail,
+                time: new Date().toLocaleString('th-TH')
+            };
+
+            localStorage.setItem('depotApprovals', JSON.stringify(depotApprovals));
+            filterVehicleType();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            currentUnapproveKey = null;
+        }
+
+        function submitPasswordModal() {
+            const pwd = document.getElementById('unapprovePasswordInput').value;
+            if (pwd === 'Ptglg2026@ammer.') {
+                if (currentUnapproveKey && depotApprovals[currentUnapproveKey]) {
+                    delete depotApprovals[currentUnapproveKey];
+                    localStorage.setItem('depotApprovals', JSON.stringify(depotApprovals));
+                    filterVehicleType();
+                }
+                closePasswordModal();
+                showNotification('สำเร็จ', 'ยกเลิกการอนุมัติสำเร็จเรียบร้อยแล้ว');
+            } else {
+                document.getElementById('passwordErrorMsg').classList.remove('hidden');
+            }
+        }
+
         const monthSheetIdMap = {
             'ม.ค.': '1eUadg6ZfFBXv2Y5rt4cJ8LJRa-WPkQC-uK0vi4SwC-4',
             'ก.พ.': '1eUadg6ZfFBXv2Y5rt4cJ8LJRa-WPkQC-uK0vi4SwC-4',
@@ -430,7 +551,6 @@
             const selectedMonth = document.getElementById('monthSelect').value;
             document.getElementById('modalMonthBadge').innerText = selectedMonth;
 
-            // กรองข้อมูลเฉพาะเดือนที่เลือกจาก allParsedSummary
             let monthFiltered = allParsedSummary.filter(item => String(item.month).trim() === String(selectedMonth).trim());
             if (monthFiltered.length === 0) {
                 monthFiltered = sampleData.filter(item => String(item.month).trim() === String(selectedMonth).trim());
@@ -571,7 +691,6 @@
             filterCurrentMonthData();
         }
 
-        // Parse summary rows strictly based on data150 exact column structure from image
         function parseSummaryRows(rows) {
             const list = [];
             for (let i = 1; i < rows.length; i++) {
@@ -584,17 +703,17 @@
                     return String(c.v !== null && c.v !== undefined ? c.v : (c.f || '')).trim();
                 };
 
-                const monthVal = getStr(0);      // Col A: เดือน
-                const vehicleType = getStr(1);   // Col B: ประเภทรถ
-                const depotVal = getStr(2);      // Col C: คลัง
+                const monthVal = getStr(0);
+                const vehicleType = getStr(1);
+                const depotVal = getStr(2);
 
                 if (!depotVal || depotVal === 'คลัง' || depotVal.toLowerCase() === 'depot') continue;
 
-                const gt150 = parseNumVal(r.c[3]);       // Col D: >150
-                const lt150Pair = parseNumVal(r.c[4]);   // Col E: <150 ขับคู่
-                const prevPct = parsePctVal(r.c[8]);     // Col I: เดือนก่อนหน้า (% <150 ขับ)
-                const oppCost = parseNumVal(r.c[10]);    // Col K: ค่าเสียโอกาส
-                const extraCost = parseNumVal(r.c[11]);  // Col L: ค่าเที่ยวส่วนเกิน
+                const gt150 = parseNumVal(r.c[3]);
+                const lt150Pair = parseNumVal(r.c[4]);
+                const prevPct = parsePctVal(r.c[8]);
+                const oppCost = parseNumVal(r.c[10]);
+                const extraCost = parseNumVal(r.c[11]);
 
                 list.push({
                     month: monthVal,
@@ -610,7 +729,6 @@
             return list;
         }
 
-        // Parsing Detail150: Row 1 Header, Row 2+ Data
         function parseDetailMasterRows(rows) {
             const list = [];
             for (let i = 1; i < rows.length; i++) {
@@ -723,9 +841,11 @@
             if (!tbody) return;
             tbody.innerHTML = '';
 
+            const currentMonth = document.getElementById('monthSelect').value;
+
             items.forEach(item => {
                 const tr = document.createElement('tr');
-                tr.className = 'hover:bg-emerald-50/60 transition cursor-pointer';
+                tr.className = 'hover:bg-emerald-50/60 transition';
 
                 const vBadgeClass = item.vehicleType === 'เทรลเลอร์' ? 'bg-purple-100 text-purple-800 border-purple-300' : 'bg-emerald-100 text-emerald-800 border-emerald-300';
                 let curPctBg = '';
@@ -735,8 +855,28 @@
                 const diffFormatted = (item.diffPct > 0 ? '+' : '') + item.diffPct.toFixed(2) + '%';
                 const diffClass = item.diffPct > 0 ? 'font-bold text-rose-600 bg-rose-50' : (item.diffPct < 0 ? 'font-bold text-emerald-600 bg-emerald-50' : 'text-slate-400');
 
+                const approvalKey = `${currentMonth}_${item.depot}_${item.vehicleType}`;
+                const approvalData = depotApprovals[approvalKey];
+                const isApproved = approvalData && approvalData.approved;
+
+                let approveBtnHtml = '';
+                if (isApproved) {
+                    approveBtnHtml = `
+                        <div onclick="toggleDepotApproval('${item.depot}', '${item.vehicleType}')" class="flex flex-col items-center text-[10px] cursor-pointer hover:bg-rose-100 border border-rose-300 text-rose-800 bg-rose-50 px-2 py-1 rounded-lg transition" title="คลิกเพื่อยกเลิกการอนุมัติ (ต้องใส่รหัสผ่าน)">
+                            <span class="font-bold"><i class="fa-solid fa-circle-check text-emerald-600"></i> อนุมัติแล้ว</span>
+                            <span class="text-slate-600 truncate max-w-[130px]" title="${approvalData.email}">${approvalData.email}</span>
+                        </div>
+                    `;
+                } else {
+                    approveBtnHtml = `
+                        <button onclick="toggleDepotApproval('${item.depot}', '${item.vehicleType}')" class="px-3 py-1 rounded-lg text-[11px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition active:scale-95">
+                            <i class="fa-solid fa-check mr-1"></i> กด Approve
+                        </button>
+                    `;
+                }
+
                 tr.innerHTML = `
-                    <td class="py-2.5 px-3 text-left font-semibold text-emerald-700 hover:text-emerald-900 underline underline-offset-2 flex items-center gap-1.5" onclick="openDepotDetail('${item.depot}', '${item.vehicleType}')">
+                    <td class="py-2.5 px-3 text-left font-semibold text-emerald-700 hover:text-emerald-900 underline underline-offset-2 flex items-center gap-1.5 cursor-pointer" onclick="openDepotDetail('${item.depot}', '${item.vehicleType}')">
                         <i class="fa-solid fa-circle-info text-emerald-500 text-[11px]"></i>
                         <span>${item.depot}</span>
                     </td>
@@ -750,6 +890,9 @@
                     <td class="py-2.5 px-3 ${diffClass}">${diffFormatted}</td>
                     <td class="py-2.5 px-3 text-right ${item.oppCost > 0 ? 'font-semibold text-rose-600' : 'text-slate-400'}">${item.oppCost.toLocaleString()}</td>
                     <td class="py-2.5 px-3 text-right ${item.extraCost > 0 ? '' : 'text-slate-400'}">${item.extraCost.toLocaleString()}</td>
+                    <td class="py-2.5 px-3 text-center align-middle">
+                        ${approveBtnHtml}
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -771,11 +914,13 @@
                     <td class="py-2.5 px-3 ${diffAvgClass}">${diffAvgFormatted}</td>
                     <td class="py-2.5 px-3 text-right">${summary.avgOppCost.toLocaleString()}</td>
                     <td class="py-2.5 px-3 text-right">${summary.avgExtraCost.toLocaleString()}</td>
+                    <td>-</td>
                 </tr>
                 <tr class="bg-emerald-100 text-emerald-950 font-extrabold text-sm border-t border-emerald-200">
                     <td class="py-3 px-3 text-left" colspan="9">Total (รวมทั้งสิ้น)</td>
                     <td class="py-3 px-3 text-right text-rose-700">${summary.totalOppCost.toLocaleString()}</td>
                     <td class="py-3 px-3 text-right text-emerald-900">${summary.totalExtraCost.toLocaleString()}</td>
+                    <td>-</td>
                 </tr>
             `;
         }
